@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
+namespace fs = std::filesystem;
 
 void imshow(const std::string& title, const cv::Mat& img);
 

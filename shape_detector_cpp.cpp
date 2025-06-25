@@ -1,4 +1,4 @@
-#include "shape_detector.h"
+#include "shape_detector_cpp.h"
 
 
 void imshow(const std::string& title, const cv::Mat& img) 

@@ -82,3 +82,14 @@ sudo apt-get install gdb build-essential
 
 
 unset GTK_PATH
+
+
+
+
+Google Test
+cd third_party
+git submodule add https://github.com/google/googletest.git
+git submodule update --init --recursive
+
+
+sudo apt-get install libcanberra-gtk-module libcanberra-gtk3-module
