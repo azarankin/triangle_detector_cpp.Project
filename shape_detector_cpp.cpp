@@ -1,5 +1,5 @@
 #include "shape_detector_cpp.h"
-
+#include "utils/utils_cpp.h"
 
 std::string print_message() 
 {
@@ -168,18 +168,12 @@ void run_camera(const std::vector<cv::Point>& template_contour, int camid)
 }
 
 
+
+
 void create_triangle_image(const std::string& filename, cv::Size size, int margin) 
 {
     cv::Mat img(size, CV_8UC3, cv::Scalar(255, 255, 255));
-
-    cv::Point pt1(size.width / 2, margin);                 // top
-    cv::Point pt2(margin, size.height - margin);           // left
-    cv::Point pt3(size.width - margin, size.height - margin); // right
-
-    std::vector<cv::Point> triangle_cnt = {pt1, pt2, pt3};
-
-    cv::drawContours(img, std::vector<std::vector<cv::Point>>{triangle_cnt}, 0, cv::Scalar(0, 0, 0), cv::FILLED);
-
+    drawEquilateralTriangl(img, size, margin);
     cv::imwrite(filename, img);
     std::cout << "Triangle image saved as " << filename << std::endl;
 }

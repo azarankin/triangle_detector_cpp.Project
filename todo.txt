@@ -4,3 +4,5 @@ time and profiling measurment
 proccess abilities
 compile production with O3 and CUDA
 make streams
+add test for unequal dimensions triangle500x600 for CPP, save the result i reference output and compare it with cuda
+make git pipline with test passing before the push

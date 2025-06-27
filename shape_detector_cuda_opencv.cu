@@ -1,4 +1,6 @@
-#include "shape_detector_cpp.h"
+#include "shape_detector_cuda_opencv.cuh"
+#include "utils/utils_cuda_opencv.cuh"
+#include <cuda_runtime.h>
 
 
 std::string print_message() 
@@ -168,18 +170,38 @@ void run_camera(const std::vector<cv::Point>& template_contour, int camid)
 }
 
 
+
+
+
+
 void create_triangle_image(const std::string& filename, cv::Size size, int margin) 
 {
-    cv::Mat img(size, CV_8UC3, cv::Scalar(255, 255, 255));
+    int width = size.width;
+    int height = size.height;
 
-    cv::Point pt1(size.width / 2, margin);                 // top
-    cv::Point pt2(margin, size.height - margin);           // left
-    cv::Point pt3(size.width - margin, size.height - margin); // right
+    uchar3* d_img;
+    size_t imgSize = width * height * sizeof(uchar3);
+    cudaMalloc(&d_img, imgSize);
 
-    std::vector<cv::Point> triangle_cnt = {pt1, pt2, pt3};
+    int2 pt1 = make_int2(width / 2, margin);                  // top
+    int2 pt2 = make_int2(margin, height - margin);            // left
+    int2 pt3 = make_int2(width - margin, height - margin);    // right
 
-    cv::drawContours(img, std::vector<std::vector<cv::Point>>{triangle_cnt}, 0, cv::Scalar(0, 0, 0), cv::FILLED);
 
+    dim3 block(256);  // כל בלוק ממלא שורות (thread לכל y)
+    dim3 grid((height + block.x - 1) / block.x);
+    drawEquilateralTriangleKernel<<<grid, block>>>(d_img, width, height, margin);
+
+    cudaDeviceSynchronize();
+
+    // העברה חזרה ל־CPU וכתיבה
+    std::vector<uchar3> h_img(width * height);
+    cudaMemcpy(h_img.data(), d_img, imgSize, cudaMemcpyDeviceToHost);
+    cudaFree(d_img);
+
+    // עטיפה לתוך cv::Mat
+    cv::Mat img(height, width, CV_8UC3, h_img.data());
     cv::imwrite(filename, img);
-    std::cout << "Triangle image saved as " << filename << std::endl;
+
+    std::cout << "Triangle image (CUDA) saved as " << filename << std::endl;
 }

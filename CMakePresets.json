@@ -7,14 +7,15 @@
     },
     "configurePresets": [
         {
-            "name": "debug",
-            "displayName": "Debug build",
+            "name": "debug-x64",
+            "displayName": "Debug PC RTX4060TI build",
             "generator": "Ninja",
             "description": "Debug build with CUDA and OpenCV",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc"
+                "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+                "CMAKE_CUDA_ARCHITECTURES": "89"
             }
         }
     ]
