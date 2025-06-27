@@ -1,1 +1,6 @@
-add camera dem
+add camera demo
+less unit test output, in addition the assert
+time and profiling measurment
+proccess abilities
+compile production with O3 and CUDA
+make streams

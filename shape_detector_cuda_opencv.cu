@@ -3,8 +3,8 @@
 
 std::string print_message() 
 {
-    std::cout << "\t\t\t\t\t\t\tPrinting from C++ library!" << std::endl;
-    return "cpp";
+    std::cout << "\t\t\t\t\t\t\tPrinting from CUDA library!" << std::endl;
+    return "cuda_opencv";
 }
 
 

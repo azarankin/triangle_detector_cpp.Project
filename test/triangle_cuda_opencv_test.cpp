@@ -1,25 +1,23 @@
 #include <gtest/gtest.h>
+
 #include "test_logic.h" // #include <gtest/gtest.h> #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
 // the functions
-#include "../shape_detector_cpp.h"
+#include "../shape_detector_cuda_opencv.cuh"
 
 
 
 
+/* OpenCV with CUDA application*/
 
+class CUDAOpenCVTest : public TriangleImageTest{};
 
-class CppTest : public TriangleImageTest{};
-
-/*clean C++ code Tests*/
-
-
-TEST_F(CppTest, CppMessage) 
+TEST_F(CUDAOpenCVTest, CudaOpenCVMessage) 
 {
-    ASSERT_EQ(print_message(), "cpp"); 
+    ASSERT_EQ(print_message(), "cuda_opencv"); 
 }
 
 
-TEST_F(CppTest, GenerateTriangle) 
+TEST_F(CUDAOpenCVTest, GenerateTriangle) 
 {
     create_triangle_image(new_triangle_img);
     cv::Mat expected = cv::imread(this->expected_triangle_img, cv::IMREAD_COLOR);
@@ -27,7 +25,7 @@ TEST_F(CppTest, GenerateTriangle)
     image_similarity_asserts(expected, result);
 }
 
-TEST_F(CppTest, DetectTriangleContour) 
+TEST_F(CUDAOpenCVTest, DetectTriangleContour) 
 {
     auto template_contour = find_shape_contour(triangle_img);
     cv::Mat triangle_image = cv::imread(triangle_img, cv::IMREAD_COLOR);
@@ -36,7 +34,7 @@ TEST_F(CppTest, DetectTriangleContour)
     image_similarity_asserts(expected, result);
 }
 
-TEST_F(CppTest, DetectTriangleContourOnAnother) 
+TEST_F(CUDAOpenCVTest, DetectTriangleContourOnAnother) 
 {
     auto template_contour = find_shape_contour(triangle_img);
     cv::Mat other_triangle_image = cv::imread(other_triangle_img, cv::IMREAD_COLOR);
