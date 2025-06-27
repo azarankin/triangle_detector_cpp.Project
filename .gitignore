@@ -5,3 +5,5 @@ test/current_output
 # third party
 third_party/*
 !third_party/.gitkeep
+!third_party/googletest
+!third_party/googletest/.git

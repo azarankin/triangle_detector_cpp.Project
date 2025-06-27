@@ -1,4 +1,4 @@
-#include "shape_detector_cpp.h"
+#include "../shape_detector_cpp.h"
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -13,12 +13,13 @@ int main() {
     fs::path source_file = __FILE__;
     fs::path dir = source_file.parent_path();
 
-    fs::path triangle_path = dir / "triangle.png";
+    fs::path triangle_path = dir / "out/triangle.png";
     fs::path other_triangle_path = dir / "other_triangle.png";
-    fs::path output_with_contour_path = dir / "triangle_with_contour.png";
-    fs::path output_detected_path = dir / "contours_found.png";
+    fs::path output_with_contour_path = dir / "out/triangle_with_contour.png";
+    fs::path output_detected_path = dir / "out/contours_found.png";
 
-    try {
+    try
+    {
         // ---- Create a new triangle image ----
         std::cout << "Create a new triangle shape\n";
         create_triangle_image(triangle_path);
@@ -54,7 +55,9 @@ int main() {
         imshow("Triangle with contour", triangle_with_contour_img);
         imshow("Detected contours", other_with_detected);
 
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) 
+    {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
