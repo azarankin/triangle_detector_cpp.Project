@@ -33,6 +33,7 @@ TEST_F(CppTest, DetectTriangleContour)
     cv::Mat triangle_image = cv::imread(triangle_img, cv::IMREAD_COLOR);
     auto result = draw_contour_on_image(triangle_image, template_contour);
     cv::Mat expected = cv::imread(expected_triangle_contours_img, cv::IMREAD_COLOR);
+    //img_save_the_difference_between_images(current_output / "diff.png", expected, result);
     image_similarity_asserts(expected, result);
 }
 

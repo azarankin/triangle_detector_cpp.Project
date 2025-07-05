@@ -27,4 +27,4 @@ std::vector<std::vector<cv::Point>> contour_compare(
 void run_camera(const std::vector<cv::Point>& template_contour, int camid = 0);
 
 void create_triangle_image(const std::string& filename = "triangle.png",
-                                 cv::Size size = {600, 600}, int margin = 150);
+                                 cv::Size size = cv::Size{600, 600}, int margin = 150);

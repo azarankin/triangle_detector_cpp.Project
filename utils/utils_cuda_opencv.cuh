@@ -1,5 +1,27 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
+#include <opencv2/cudaarithm.hpp>
+#include <opencv2/cudafilters.hpp>
+
+
+// תחליף את adaptiveThreshold על CPU בלוגיקה CUDA הזו:
+void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst, int blockSize, double C) {
+    // (1) ממוצע לוקאלי – boxFilter CUDA
+    cv::cuda::GpuMat mean_local;
+    auto boxFilter = cv::cuda::createBoxFilter(src.type(), src.type(), cv::Size(blockSize, blockSize));
+    boxFilter->apply(src, mean_local);
+
+    // (2) מחסרים C מהמטריצה
+    cv::cuda::GpuMat threshMat;
+    cv::cuda::subtract(mean_local, cv::Scalar::all(C), threshMat);
+
+    // (3) משווים: src > threshMat ? 255 : 0 (THRESH_BINARY)
+    cv::cuda::compare(src, threshMat, dst, cv::CMP_GT); // dst = mask
+    // dst יוצא בינארי (0/255)
+}
+
+
+
 
 __global__ void drawEquilateralTriangleKernel(uchar3* img, int width, int height, int margin)
 {

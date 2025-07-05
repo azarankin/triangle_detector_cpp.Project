@@ -31,4 +31,12 @@ protected:
         double diff = cv::norm(result, expected, cv::NORM_L2);
         ASSERT_LT(diff, tol) << "Images are not similar enough! Diff: " << diff;
     }
+
+    void img_save_the_difference_between_images(fs::path&& diff_img_path, cv::Mat& expected, cv::Mat& result )
+    {
+        cv::Mat diff;
+        cv::absdiff(expected, result, diff);
+        cv::imwrite(diff_img_path, diff);
+    }
+
 };

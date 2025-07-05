@@ -1,6 +1,47 @@
 #include "shape_detector_cuda_opencv.cuh"
 #include "utils/utils_cuda_opencv.cuh"
+
+
 #include <cuda_runtime.h>
+#include <opencv2/cudaarithm.hpp>
+#include <opencv2/cudaimgproc.hpp> // cv::cuda::cvtColor
+#include <opencv2/cudafilters.hpp>
+
+
+
+DebugConfig g_debug_config;
+
+
+void save_debug_image(const std::string& name, const cv::Mat& img)
+{
+
+if(!g_debug_config.enable)
+    return;
+if (img.empty()) return;
+//td::filesystem::create_directories(out_dir);
+cv::Mat to_save;
+if (img.channels() == 4)
+    cv::cvtColor(img, to_save, cv::COLOR_BGRA2RGBA);
+else if (img.channels() == 3)
+    cv::cvtColor(img, to_save, cv::COLOR_BGR2RGB);
+else
+    to_save = img;
+
+cv::imwrite(g_debug_config.output_dir + (!g_debug_config.prefix.empty() ? ("/" + g_debug_config.prefix +  "__") : "/") + name + ".png", to_save);
+
+}
+
+void save_debug_image(const std::string& name, const cv::cuda::GpuMat& gpu_img)
+{
+if(!g_debug_config.enable)
+    return;
+cv::Mat cpu_img;
+gpu_img.download(cpu_img);
+save_debug_image(name, cpu_img);
+}
+
+
+
 
 
 std::string print_message() 
@@ -27,42 +68,6 @@ void imshow(const std::string& title, const cv::Mat& img)
 
 
 
-std::vector<cv::Point> find_shape_contour(const std::string& address)
-{
-    // טען תמונה
-    cv::Mat templat_img = cv::imread(address);
-    if (templat_img.empty())
-        throw std::runtime_error("Failed to load image: " + address);
-
-    // המרה לאפור
-    cv::Mat templat_img_gray;
-    cv::cvtColor(templat_img, templat_img_gray, cv::COLOR_BGR2GRAY);
-
-    // טשטוש
-    cv::Mat blured;
-    cv::GaussianBlur(templat_img_gray, blured, cv::Size(5, 5), 0);
-
-    // סף
-    cv::Mat thresh1;
-    cv::threshold(blured, thresh1, 127, 255, 0);
-
-    // מציאת קונטורים
-    std::vector<std::vector<cv::Point>> contours_template;
-    cv::findContours(thresh1, contours_template, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
-
-    // מיון לפי שטח, יורד
-    std::sort(contours_template.begin(), contours_template.end(),
-        [](const std::vector<cv::Point>& a, const std::vector<cv::Point>& b) {
-            return cv::contourArea(a) > cv::contourArea(b);
-        });
-
-    if (contours_template.size() < 2)
-        throw std::runtime_error("Template image must contain at least two contours.");
-
-    // הקונטור השני בגודלו (כמו בפייתון)
-    return contours_template[1];
-}
-
 
 
 cv::Mat draw_contour_on_image(cv::Mat& img, const std::vector<cv::Point>& contour, const cv::Scalar& color, int thickness)
@@ -84,6 +89,65 @@ cv::Mat draw_contour_on_image(cv::Mat& img, const std::vector<std::vector<cv::Po
 }
 
 
+
+
+
+
+
+
+
+std::vector<cv::Point> find_shape_contour(const std::string& address)
+{
+    // Load image
+    cv::Mat host_img = cv::imread(address);
+    if (host_img.empty())
+        throw std::runtime_error("Failed to load image: " + address);
+
+    // Upload to GPU
+    cv::cuda::GpuMat gpu_img(host_img);
+
+    // Convert to grayscale
+    cv::cuda::GpuMat gpu_gray;
+    cv::cuda::cvtColor(gpu_img, gpu_gray, cv::COLOR_BGR2GRAY);
+    save_debug_image("find_shape_contour__gray", gpu_gray);
+
+    // Gaussian blur
+    cv::cuda::GpuMat gpu_blur;
+    auto gauss_filter = cv::cuda::createGaussianFilter(gpu_gray.type(), gpu_gray.type(), cv::Size(5, 5), 0);
+    gauss_filter->apply(gpu_gray, gpu_blur);
+    save_debug_image("find_shape_contour__blur", gpu_blur);
+
+    // Threshold
+    cv::cuda::GpuMat gpu_thresh;
+    cv::Mat thresh1;
+    cv::cuda::threshold(gpu_blur, gpu_thresh, 127, 255, cv::THRESH_BINARY);
+    gpu_thresh.download(thresh1);
+    save_debug_image("find_shape_contour__thresh", thresh1);
+
+    // Find contours (CPU only)
+    std::vector<std::vector<cv::Point>> contours_template;
+    cv::findContours(thresh1, contours_template, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+
+    // Sort contours by area (descending)
+    std::sort(contours_template.begin(), contours_template.end(),
+        [](const std::vector<cv::Point>& a, const std::vector<cv::Point>& b) {
+            return cv::contourArea(a) > cv::contourArea(b);
+        });
+
+    if (contours_template.size() < 2)
+        throw std::runtime_error("Template image must contain at least two contours.");
+
+    return contours_template[1];
+}
+
+
+
+
+
+
+
+
+
 std::vector<std::vector<cv::Point>> contour_compare(
     cv::Mat& target_frame, 
     const std::vector<cv::Point>& template_contour,
@@ -91,41 +155,50 @@ std::vector<std::vector<cv::Point>> contour_compare(
     double min_area_ratio, 
     double max_area_ratio)
 {
-    // אפור
-    cv::Mat target_gray;
-    cv::cvtColor(target_frame, target_gray, cv::COLOR_BGR2GRAY);
+    // Upload image to GPU
+    cv::cuda::GpuMat gpu_frame(target_frame);
 
-    // טשטוש
-    cv::Mat blured;
-    cv::GaussianBlur(target_gray, blured, cv::Size(5, 5), 0);
+    // Convert to grayscale
+    cv::cuda::GpuMat gpu_gray;
+    cv::cuda::cvtColor(gpu_frame, gpu_gray, cv::COLOR_BGR2GRAY);
+    save_debug_image("contour_compare__gray", gpu_gray);
 
-    // סף אדפטיבי
+
+    // Gaussian blur (CUDA)
+    cv::cuda::GpuMat gpu_blur;
+    auto gauss_filter = cv::cuda::createGaussianFilter(gpu_gray.type(), gpu_gray.type(), cv::Size(5, 5), 0);
+    gauss_filter->apply(gpu_gray, gpu_blur);
+    save_debug_image("contour_compare__blur", gpu_blur);
+
+
+    // --------- *** NEW: CUDA adaptive threshold *** ---------
+    cv::cuda::GpuMat gpu_thresh;
+    cuda_adaptive_threshold(gpu_blur, gpu_thresh, /*blockSize=*/11, /*C=*/5);
+    save_debug_image("contour_compare__thresh", gpu_thresh);
+
+
+    // הורדה ל-CPU להמשך עיבוד (contours)
     cv::Mat thresh2;
-    cv::adaptiveThreshold(blured, thresh2, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 5);
+    gpu_thresh.download(thresh2);
 
-    // מציאת קונטורים
+    // Contours (CPU)
     std::vector<std::vector<cv::Point>> contours_target;
     cv::findContours(thresh2, contours_target, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-    // הגדרות סף שטח
     double frame_area = static_cast<double>(target_frame.rows * target_frame.cols);
     double min_area = frame_area * min_area_ratio;
     double max_area = frame_area * max_area_ratio;
 
     std::vector<std::vector<cv::Point>> closest_contours;
-
-    // חיפוש קונטורים דומים
     for (const auto& c : contours_target) {
         double match = cv::matchShapes(template_contour, c, cv::CONTOURS_MATCH_I3, 0.0);
         if (match < match_threshold) {
             double area = cv::contourArea(c);
             if (area < min_area || area > max_area)
-                continue; // קטן/גדול מדי = רעש
+                continue;
             closest_contours.push_back(c);
         }
     }
-
-
     return closest_contours;
 }
 

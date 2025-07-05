@@ -27,15 +27,15 @@ endfunction()
 
 
 # ---- Libraries ----
-
-# ---- C++ Code Files----
+## C++ Code Files
 add_library(triangle_detector_cpu shape_detector_cpp.cpp)
 target_include_directories(triangle_detector_cpu PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(triangle_detector_cpu PRIVATE ${OpenCV_LIBS})
-# ---- CUDA OpenCV Code Files ----
+target_link_libraries(triangle_detector_cpu PUBLIC ${OpenCV_LIBS})
+
+## CUDA OpenCV Code Files
 add_library(triangle_detector_cuda shape_detector_cuda_opencv.cu)
 target_include_directories(triangle_detector_cuda PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(triangle_detector_cuda PRIVATE ${OpenCV_LIBS} cuda)
+target_link_libraries(triangle_detector_cuda PUBLIC ${OpenCV_LIBS} opencv_cudaimgproc cuda)
 
 
 # ---- Executables ----
@@ -49,7 +49,7 @@ add_postbuild_clear_output(triangle_detector_cpp_demo ${CMAKE_SOURCE_DIR}/demo/o
 ## CPU Tests
 add_executable(triangle_detector_cpp_tests test/triangle_cpp_test.cpp)
 target_link_libraries(triangle_detector_cpp_tests
-  PRIVATE gtest gtest_main triangle_detector_cpu ${OpenCV_LIBS}
+  PRIVATE gtest gtest_main triangle_detector_cpu
 )
 gtest_discover_tests(triangle_detector_cpp_tests)
 add_postbuild_clear_output(triangle_detector_cpp_tests ${CMAKE_SOURCE_DIR}/test/current_output)
@@ -58,7 +58,13 @@ add_postbuild_clear_output(triangle_detector_cpp_tests ${CMAKE_SOURCE_DIR}/test/
 ## CUDA Tests
 add_executable(triangle_detector_cuda_tests test/triangle_cuda_opencv_test.cpp)
 target_link_libraries(triangle_detector_cuda_tests
-  PRIVATE gtest gtest_main triangle_detector_cuda ${OpenCV_LIBS} cuda
+  PRIVATE gtest gtest_main triangle_detector_cuda
+)
+# Define debug flag for image saving in CUDA tests
+target_compile_definitions(triangle_detector_cuda_tests
+  PRIVATE
+  "ENABLE_DEBUG_SAVE"
+  "DEBUG_OUTPUT_DIR=\"${CMAKE_SOURCE_DIR}/test/current_output\""
 )
 gtest_discover_tests(triangle_detector_cuda_tests)
 add_postbuild_clear_output(triangle_detector_cuda_tests ${CMAKE_SOURCE_DIR}/test/current_output)

@@ -6,3 +6,19 @@ compile production with O3 and CUDA
 make streams
 add test for unequal dimensions triangle500x600 for CPP, save the result i reference output and compare it with cuda
 make git pipline with test passing before the push
+add NSIGHT measurments
+add vliw implimentation
+add opencl implimentation
+add utils test
+add the python code
+refactor the python code
+add number of angle detector feature to both function
+check with addition test between image differences with img_save_the_difference_between_images()
+split more unit test for sublevels: blur_stage.png thresh_stage.png contours_stage.png
+CUDA basic test
+fix extern and save_debug_image
+run tests in parallel
+move to OOP
+add benchmark (for 30 runnings)
+test case
+cudnn

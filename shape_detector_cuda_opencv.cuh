@@ -4,7 +4,10 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <filesystem>
 namespace fs = std::filesystem;
+
+
 
 std::string print_message();
 
@@ -28,3 +31,18 @@ void run_camera(const std::vector<cv::Point>& template_contour, int camid = 0);
 
 void create_triangle_image(const std::string& filename = "triangle.png",
                                  cv::Size size = {600, 600}, int margin = 150);
+
+
+/* Debugging */
+
+void save_debug_image(const std::string& name, const cv::Mat& img);
+
+void save_debug_image(const std::string& name, const cv::cuda::GpuMat& gpu_img);
+
+struct DebugConfig {
+    bool enable = false;
+    std::string output_dir;
+    std::string prefix;
+};
+
+extern DebugConfig g_debug_config;
