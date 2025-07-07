@@ -1,6 +1,7 @@
 build/
 out/
 test/current_output
+test/archive_current_output
 
 # third party
 third_party/*

@@ -1,29 +1,13 @@
-#include "shape_detector_cpp.h"
-#include "utils/utils_cpp.h"
+#include <shape_detector_common.h>
+#include <utils_cpp.h>
+#include <debug.h>
+
 
 std::string print_message() 
 {
     std::cout << "\t\t\t\t\t\t\tPrinting from C++ library!" << std::endl;
     return "cpp";
 }
-
-
-void imshow(const std::string& title, const cv::Mat& img) 
-{
-    cv::Mat to_show;
-    if (img.channels() == 4) {
-        cv::cvtColor(img, to_show, cv::COLOR_BGRA2RGBA);
-    } else if (img.channels() == 3) {
-        cv::cvtColor(img, to_show, cv::COLOR_BGR2RGB);
-    } else {
-        to_show = img.clone();
-    }
-    cv::imshow(title, to_show);
-    cv::waitKey(0);  // waiting for key pressing
-}
-
-
-
 
 std::vector<cv::Point> find_shape_contour(const std::string& address)
 {
@@ -34,52 +18,37 @@ std::vector<cv::Point> find_shape_contour(const std::string& address)
 
     // המרה לאפור
     cv::Mat templat_img_gray;
-    cv::cvtColor(templat_img, templat_img_gray, cv::COLOR_BGR2GRAY);
+    gray_filter(templat_img ,templat_img_gray);
 
     // טשטוש
     cv::Mat blured;
-    cv::GaussianBlur(templat_img_gray, blured, cv::Size(5, 5), 0);
+    gaussian_blur_filter(templat_img_gray, blured);
 
     // סף
     cv::Mat thresh1;
-    cv::threshold(blured, thresh1, 127, 255, 0);
+    threshold_filter(blured, thresh1);
 
     // מציאת קונטורים
     std::vector<std::vector<cv::Point>> contours_template;
-    cv::findContours(thresh1, contours_template, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+    find_contours(contours_template, thresh1);
 
     // מיון לפי שטח, יורד
-    std::sort(contours_template.begin(), contours_template.end(),
-        [](const std::vector<cv::Point>& a, const std::vector<cv::Point>& b) {
-            return cv::contourArea(a) > cv::contourArea(b);
-        });
-
-    if (contours_template.size() < 2)
-        throw std::runtime_error("Template image must contain at least two contours.");
+    auto second_largest_contour = get_second_largest_contour(contours_template);
 
     // הקונטור השני בגודלו (כמו בפייתון)
-    return contours_template[1];
+    return second_largest_contour;
 }
 
 
 
-cv::Mat draw_contour_on_image(cv::Mat& img, const std::vector<cv::Point>& contour, const cv::Scalar& color, int thickness)
+void create_triangle_image(const std::string& filename, cv::Size size, int margin) 
 {
-    if (img.empty())
-        throw std::runtime_error("Failed to load image");
-
-    std::vector<std::vector<cv::Point>> contours{contour};
-    cv::drawContours(img, contours, 0, color, thickness);
-    return img;
+    cv::Mat img(size, CV_8UC3, cv::Scalar(255, 255, 255));
+    drawEquilateralTriangle(img, size, margin);
+    cv::imwrite(filename, img);
+    std::cout << "Triangle image saved as " << filename << std::endl;
 }
 
-cv::Mat draw_contour_on_image(cv::Mat& img, const std::vector<std::vector<cv::Point>>& contours, const cv::Scalar& color, int thickness) 
-{
-    if (img.empty())
-        throw std::runtime_error("Failed to load image");
-    cv::drawContours(img, contours, -1, color, thickness);
-    return img;
-}
 
 
 std::vector<std::vector<cv::Point>> contour_compare(
@@ -89,91 +58,24 @@ std::vector<std::vector<cv::Point>> contour_compare(
     double min_area_ratio, 
     double max_area_ratio)
 {
-    // אפור
+    // Gray filter
     cv::Mat target_gray;
-    cv::cvtColor(target_frame, target_gray, cv::COLOR_BGR2GRAY);
+    gray_filter(target_frame ,target_gray);
 
-    // טשטוש
+    // Gaussian blur
     cv::Mat blured;
-    cv::GaussianBlur(target_gray, blured, cv::Size(5, 5), 0);
+    gaussian_blur_filter(target_gray, blured);
 
-    // סף אדפטיבי
+    // Adaptive threshold
     cv::Mat thresh2;
-    cv::adaptiveThreshold(blured, thresh2, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 5);
+    adaptive_threshold_filter(blured, thresh2);
 
-    // מציאת קונטורים
+    // Contours
     std::vector<std::vector<cv::Point>> contours_target;
-    cv::findContours(thresh2, contours_target, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+    find_contours(contours_target, thresh2);
 
-    // הגדרות סף שטח
-    double frame_area = static_cast<double>(target_frame.rows * target_frame.cols);
-    double min_area = frame_area * min_area_ratio;
-    double max_area = frame_area * max_area_ratio;
-
-    std::vector<std::vector<cv::Point>> closest_contours;
-
-    // חיפוש קונטורים דומים
-    for (const auto& c : contours_target) {
-        double match = cv::matchShapes(template_contour, c, cv::CONTOURS_MATCH_I3, 0.0);
-        if (match < match_threshold) {
-            double area = cv::contourArea(c);
-            if (area < min_area || area > max_area)
-                continue; // קטן/גדול מדי = רעש
-            closest_contours.push_back(c);
-        }
-    }
-
+    std::vector<std::vector<cv::Point>> closest_contours = find_closest_contours(target_frame, template_contour, contours_target, match_threshold, min_area_ratio, max_area_ratio);
 
     return closest_contours;
 }
 
-
-
-
-
-
-
-void run_camera(const std::vector<cv::Point>& template_contour, int camid) 
-{
-    cv::VideoCapture cap(camid);
-
-    if (!cap.isOpened()) {
-        std::cerr << "Error: Cannot access the camera." << std::endl;
-        return;
-    }
-
-    cv::Mat frame;
-    while (true) {
-        cap >> frame;
-        if (frame.empty()) {
-            std::cerr << "Failed to grab frame" << std::endl;
-            break;
-        }
-
-        // קריאה לפונקציית ההשוואה
-        auto contours = contour_compare(frame, template_contour);
-        auto frame_with_contours = draw_contour_on_image(frame, contours);
-        // (הפונקציה אמורה לצייר את הקונטורים על frame עצמו)
-
-        cv::imshow("Live Feed", frame_with_contours);
-
-        char key = (char)cv::waitKey(1);
-        if (key == 27 || key == 'q') { // Esc או q
-            break;
-        }
-    }
-
-    cap.release();
-    cv::destroyAllWindows();
-}
-
-
-
-
-void create_triangle_image(const std::string& filename, cv::Size size, int margin) 
-{
-    cv::Mat img(size, CV_8UC3, cv::Scalar(255, 255, 255));
-    drawEquilateralTriangl(img, size, margin);
-    cv::imwrite(filename, img);
-    std::cout << "Triangle image saved as " << filename << std::endl;
-}

@@ -1,9 +1,12 @@
-#include "../shape_detector_cpp.h"
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
 
+#include <shape_detector_common.h>
+#include <shape_detector_logic.h>
+
 namespace fs = std::filesystem;
+
 
 int main() {
     // Unset GTK_PATH to avoid display issues with OpenCV on some systems

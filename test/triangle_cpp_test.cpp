@@ -1,14 +1,23 @@
 #include <gtest/gtest.h>
 #include "test_logic.h" // #include <gtest/gtest.h> #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
 // the functions
-#include "../shape_detector_cpp.h"
+#include <shape_detector_common.h>
 
+/* Cpp application*/
+class CppTest : public TriangleImageTest
+{
+    void SetUp() override
+    {
+        fs::create_directories(current_output);
+    }
+    void TearDown() override 
+    {
+        std::string test_name = get_current_test_name() ;
+        archive_directory(current_output, archive_current_output, test_name);
+    }
 
+};
 
-
-
-
-class CppTest : public TriangleImageTest{};
 
 /*clean C++ code Tests*/
 
@@ -46,3 +55,5 @@ TEST_F(CppTest, DetectTriangleContourOnAnother)
     cv::Mat expected = cv::imread(expected_other_triangle_contours_img, cv::IMREAD_COLOR);
     image_similarity_asserts(expected, result);
 }
+
+

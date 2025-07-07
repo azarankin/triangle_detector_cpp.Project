@@ -11,6 +11,7 @@ add vliw implimentation
 add opencl implimentation
 add utils test
 add the python code
+add the cython code compiled
 refactor the python code
 add number of angle detector feature to both function
 check with addition test between image differences with img_save_the_difference_between_images()
@@ -22,3 +23,14 @@ move to OOP
 add benchmark (for 30 runnings)
 test case
 cudnn
+fix const & where needed
+clear all the outputs for each test
+code documentation for each level
+docsigen
+each test with full logs and timings
+each test cleaning after itself + parrelel responsible for output file saving
+CUDA Error Handler
+CI CD in GITHUB for the tests
+PCH
+
+
