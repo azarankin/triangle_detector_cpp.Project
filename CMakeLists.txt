@@ -30,8 +30,8 @@ message("==> CMAKE_POSITION_INDEPENDENT_CODE = \"${CMAKE_POSITION_INDEPENDENT_CO
 
 
 # Test output paths
-set(TEST_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/test/current_output")
-set(TEST_OUTPUT_ARCHIVE_DIRECTORY "${CMAKE_SOURCE_DIR}/test/archive_current_output")
+set(TEST_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/current_output")
+set(TEST_OUTPUT_ARCHIVE_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/archive_current_output")
 message("==> TEST_OUTPUT_DIRECTORY = \"${TEST_OUTPUT_DIRECTORY}\"")
 message("==> TEST_OUTPUT_ARCHIVE_DIRECTORY = \"${TEST_OUTPUT_ARCHIVE_DIRECTORY}\"")
 
@@ -272,7 +272,7 @@ endfunction()
 
 
 ## CPU Tests
-set(CPU_TEST_SRC test/triangle_cpp_test.cpp)
+set(CPU_TEST_SRC tests/triangle_cpp_test.cpp)
 set(CPU_TEST_DEPENDENCIES triangle_detector_cpp_for_test)
 set(CPU_TEST_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
 message("==> CPU_TEST_SRC = \"${CPU_TEST_SRC}\"")
@@ -287,7 +287,7 @@ add_gtest_exec(
 
 
 ## CUDA Tests
-set(CUDA_OPENCV_TEST_SRC test/triangle_cuda_opencv_test.cpp)
+set(CUDA_OPENCV_TEST_SRC tests/triangle_cuda_opencv_test.cpp)
 set(CUDA_OPENCV_TEST_DEPENDENCIES triangle_detector_cuda_opencv_for_test)
 set(CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
 message("==> CUDA_OPENCV_TEST_SRC = \"${CUDA_OPENCV_TEST_SRC}\"")
@@ -301,7 +301,7 @@ add_gtest_exec(
 )
 
 
-set(ALL_TESTS_SRC test/run_all_tests.cpp)
+set(ALL_TESTS_SRC tests/run_all_tests.cpp)
 set(ALL_TESTS_DEPENDENCIES triangle_detector_cpp_tests triangle_detector_cuda_opencv_tests)
 set(ALL_TESTS_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY}) #additional output directory list
 message("==> ALL_TESTS_SRC = \"${ALL_TESTS_SRC}\"")
@@ -314,7 +314,7 @@ add_gtest_exec(
   OUTPUT_DIRS ${ALL_TESTS_OUTPUT_DIRECTORIES}
 )
 
-# also set the ALL_TESTS_DEPENDENCIES inside the test/run_all_tests.cpp
+# also set the ALL_TESTS_DEPENDENCIES inside the tests/run_all_tests.cpp
 
 
 
