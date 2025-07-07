@@ -1,9 +1,7 @@
 
 #pragma once
-#include <utils_common.h>
+#include <shared/utils.h>
 #include <debug.h>
-
-
 
 void drawEquilateralTriangle(cv::Mat& img, cv::Size size, int margin);
 

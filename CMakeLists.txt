@@ -142,7 +142,7 @@ message("==> DEBUG_DEFINES = \"${DEBUG_DEFINES}\"")
 
 
 ## C++ Code Files
-set(CPU_SRC shape_detector_cpp.cpp src/utils_common.cpp src/utils_cpp.cpp)
+set(CPU_SRC shape_detector_cpp.cpp src/shared/utils.cpp src/utils_cpp.cpp)
 set(CPU_ICLUDES ${CMAKE_SOURCE_DIR}/include)
 set(CPU_LINK_LIBS ${OpenCV_LIBS})
 message("==> CPU_SRC = \"${CPU_SRC}\"")
@@ -181,7 +181,7 @@ add_custom_target(triangle_detector_cpp_for_test
 
 
 ## CUDA OpenCV Code Files
-set(CUDA_OPENCV_SRC shape_detector_cuda_opencv.cu src/utils_common.cpp src/utils_common.cu src/utils_cuda_opencv.cu)
+set(CUDA_OPENCV_SRC shape_detector_cuda_opencv.cu src/shared/utils.cpp src/shared/utils.cu src/utils_cuda_opencv.cu)
 set(CUDA_OPENCV_INCLUDES ${CMAKE_SOURCE_DIR}/include)
 set(CUDA_OPENCV_LINK_LIBS ${OpenCV_LIBS} opencv_cudaimgproc cuda)
 message("==> CUDA_OPENCV_SRC = \"${CUDA_OPENCV_SRC}\"")

@@ -1,5 +1,5 @@
 
-#include <utils_common.cuh>
+#include <shared/utils.cuh>
 
 __global__ void drawEquilateralTriangleKernel(uchar3* img, int width, int height, int margin)
 {
