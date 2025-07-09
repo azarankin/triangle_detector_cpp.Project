@@ -13,18 +13,18 @@ class CppTest : public TriangleImageTest
     void TearDown() override 
     {
         std::string test_name = get_current_test_name() ;
-        archive_directory(current_output, archive_current_output, test_name);
+        archive_directory(current_output, archive_current_output);
     }
 
 };
 
 
-/*clean C++ code Tests*/
+/*clean C++ Triangle Detector code Tests*/
 
 
 TEST_F(CppTest, CppMessage) 
 {
-    ASSERT_EQ(print_message(), "cpp"); 
+    ASSERT_EQ(triangle_print_message(), "cpp_triangle_detector"); 
 }
 
 

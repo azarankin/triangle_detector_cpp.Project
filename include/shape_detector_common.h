@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 //#include <shape_detector_logic.h>
 
 
-std::string print_message();
+std::string triangle_print_message();
 
 
 std::vector<cv::Point> find_shape_contour(const std::string& address);

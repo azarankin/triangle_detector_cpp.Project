@@ -148,15 +148,15 @@ message("==> DEBUG_DEFINES = \"${DEBUG_DEFINES}\"")
 
 ## C++ Code Files
 set(CPU_SRC src/cpp/shape_detector_cpp.cpp src/shared/shared_utils.cpp src/cpp/utils_cpp.cpp)
-set(CPU_ICLUDES ${CMAKE_SOURCE_DIR}/include)
+set(CPU_INCLUDE ${CMAKE_SOURCE_DIR}/include)
 set(CPU_LINK_LIBS ${OpenCV_LIBS})
 message("==> CPU_SRC = \"${CPU_SRC}\"")
-message("==> CPU_ICLUDES = \"${CPU_ICLUDES}\"")
+message("==> CPU_INCLUDE = \"${CPU_INCLUDE}\"")
 message("==> CPU_LINK_LIBS = \"${CPU_LINK_LIBS}\"")
 add_custom_target(triangle_detector_cpu
     TYPE LIBRARY
     SOURCES ${CPU_SRC}
-    INCLUDES ${CPU_ICLUDES}
+    INCLUDES ${CPU_INCLUDE}
     LINK_LIBS ${CPU_LINK_LIBS}
 )
 
@@ -166,7 +166,7 @@ message("==> CPU_LOGIC_SRC = \"${CPU_LOGIC_SRC}\"")
 add_custom_target(triangle_detector_cpu_logic
     TYPE LIBRARY
     SOURCES ${CPU_SRC} ${CPU_LOGIC_SRC}
-    INCLUDES ${CPU_ICLUDES}
+    INCLUDES ${CPU_INCLUDE}
     LINK_LIBS ${CPU_LINK_LIBS}
 )
 
@@ -178,7 +178,7 @@ message("==> CPU_DEBUG_SRC = \"${CPU_DEBUG_SRC}\"")
 add_custom_target(triangle_detector_cpp_for_test
     TYPE LIBRARY
     SOURCES ${CPU_SRC} ${CPU_DEBUG_SRC}
-    INCLUDES ${CPU_ICLUDES}
+    INCLUDES ${CPU_INCLUDE}
     LINK_LIBS ${CPU_LINK_LIBS}
     DEFINES ${DEBUG_DEFINES_CPU}
 )
@@ -276,8 +276,11 @@ function(add_gtest_exec exe_name)
 endfunction()
 
 
+set(TEST_LOGIC_SRC tests/test_logic.cpp)
+
+
 ## CPU Tests
-set(CPU_TEST_SRC tests/triangle_cpp_test.cpp)
+set(CPU_TEST_SRC tests/triangle_cpp_test.cpp tests/utils_cpp_test.cpp)
 set(CPU_TEST_DEPENDENCIES triangle_detector_cpp_for_test)
 set(CPU_TEST_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
 message("==> CPU_TEST_SRC = \"${CPU_TEST_SRC}\"")
@@ -285,7 +288,7 @@ message("==> CPU_TEST_DEPENDENCIES = \"${CPU_TEST_DEPENDENCIES}\"")
 message("==> CPU_TEST_OUTPUT_DIRECTORIES = \"${CPU_TEST_OUTPUT_DIRECTORIES}\"")
 add_gtest_exec(
   triangle_detector_cpp_tests
-  SOURCES ${CPU_TEST_SRC}
+  SOURCES ${CPU_TEST_SRC} ${TEST_LOGIC_SRC}
   LIBS_TO_LINK ${CPU_TEST_DEPENDENCIES}
   OUTPUT_DIRS ${CPU_TEST_OUTPUT_DIRECTORIES}
 )
@@ -300,7 +303,7 @@ message("==> CUDA_OPENCV_TEST_DEPENDENCIES = \"${CUDA_OPENCV_TEST_DEPENDENCIES}\
 message("==> CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES = \"${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}\"")
 add_gtest_exec(
   triangle_detector_cuda_opencv_tests
-  SOURCES ${CUDA_OPENCV_TEST_SRC}
+  SOURCES ${CUDA_OPENCV_TEST_SRC} ${TEST_LOGIC_SRC}
   LIBS_TO_LINK ${CUDA_OPENCV_TEST_DEPENDENCIES}
   OUTPUT_DIRS ${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}
 )

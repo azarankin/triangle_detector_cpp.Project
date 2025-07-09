@@ -8,6 +8,8 @@
 #include <debug.cuh>
 
 
+std::string utils_print_message();
+
 
 void cuda_gray_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst);
 

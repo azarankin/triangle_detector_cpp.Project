@@ -1,6 +1,16 @@
 #include <utils_cpp.h>
 #include <debug.h>
 
+
+
+std::string utils_print_message() 
+{
+    std::cout << "\t\t\t\t\t\t\tPrinting from C++ Utils library!" << std::endl;
+    return "cpp_utils";
+}
+
+
+
 void drawEquilateralTriangle(cv::Mat& img, cv::Size size, int margin)
 {
     cv::Point pt1(size.width / 2, margin);                 // top
@@ -40,4 +50,3 @@ void threshold_filter(const cv::Mat& src, cv::Mat& dst)
     cv::threshold(src, dst, 127, 255, cv::THRESH_BINARY);
     SAVE_DEBUG_IMAGE(dst);
 }
-

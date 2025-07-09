@@ -8,10 +8,10 @@
 #include <opencv2/cudafilters.hpp>
 
 
-std::string print_message() 
+std::string triangle_print_message() 
 {
-    std::cout << "\t\t\t\t\t\t\tPrinting from CUDA library!" << std::endl;
-    return "cuda_opencv";
+    std::cout << "\t\t\t\t\t\t\tPrinting from CUDA OpenCV Triangel Detector library!" << std::endl;
+    return "cuda_opencv_triangle_detector";
 }
 
 

@@ -2,11 +2,12 @@
 #include <utils_cpp.h>
 
 
-std::string print_message() 
+std::string triangle_print_message() 
 {
-    std::cout << "\t\t\t\t\t\t\tPrinting from C++ library!" << std::endl;
-    return "cpp";
+    std::cout << "\t\t\t\t\t\t\tPrinting from C++ Triangle Detector library!" << std::endl;
+    return "cpp_triangle_detector";
 }
+
 
 std::vector<cv::Point> find_shape_contour(const std::string& address)
 {

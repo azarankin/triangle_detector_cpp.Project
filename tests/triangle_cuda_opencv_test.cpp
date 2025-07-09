@@ -5,18 +5,20 @@
 #include <shape_detector_common.h>
 
 
-/* OpenCV with CUDA application*/
+/* CUDA OpenCV Triangle Detector application*/
 
 class CUDAOpenCVTest : public TriangleImageTest
 {
     void SetUp() override
     {
+        
         fs::create_directories(current_output);
     }
     void TearDown() override 
     {
         std::string test_name = get_current_test_name() ;
-        archive_directory(current_output, archive_current_output, test_name);
+        archive_directory(current_output, archive_current_output);
+        
     }
 
 };
@@ -25,7 +27,7 @@ class CUDAOpenCVTest : public TriangleImageTest
 TEST_F(CUDAOpenCVTest, CudaOpenCVMessage) 
 {
     
-    ASSERT_EQ(print_message(), "cuda_opencv"); 
+    ASSERT_EQ(triangle_print_message(), "cuda_opencv_triangle_detector"); 
 }
 
 
