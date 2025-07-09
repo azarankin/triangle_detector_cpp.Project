@@ -38,7 +38,6 @@ message("==> TEST_OUTPUT_ARCHIVE_DIRECTORY = \"${TEST_OUTPUT_ARCHIVE_DIRECTORY}\
 
 
 # ---- Include Directories ----
-include_directories(${CMAKE_SOURCE_DIR}) # shape_detector_common.h
 include_directories(${CMAKE_SOURCE_DIR}/include)
 message("include_directories(${CMAKE_SOURCE_DIR})")
 message("include_directories(${CMAKE_SOURCE_DIR}/include)")
@@ -142,7 +141,7 @@ message("==> DEBUG_DEFINES = \"${DEBUG_DEFINES}\"")
 
 
 ## C++ Code Files
-set(CPU_SRC shape_detector_cpp.cpp src/shared/utils.cpp src/utils_cpp.cpp)
+set(CPU_SRC src/cpp/shape_detector_cpp.cpp src/shared/shared_utils.cpp src/cpp/utils_cpp.cpp)
 set(CPU_ICLUDES ${CMAKE_SOURCE_DIR}/include)
 set(CPU_LINK_LIBS ${OpenCV_LIBS})
 message("==> CPU_SRC = \"${CPU_SRC}\"")
@@ -156,7 +155,7 @@ add_custom_target(triangle_detector_cpu
 )
 
 ## C++ DEMO Code Files
-set(CPU_LOGIC_SRC src/shape_detector_logic.cpp)
+set(CPU_LOGIC_SRC src/shared/shape_detector_logic.cpp)
 message("==> CPU_LOGIC_SRC = \"${CPU_LOGIC_SRC}\"")
 add_custom_target(triangle_detector_cpu_logic
     TYPE LIBRARY
@@ -181,7 +180,7 @@ add_custom_target(triangle_detector_cpp_for_test
 
 
 ## CUDA OpenCV Code Files
-set(CUDA_OPENCV_SRC shape_detector_cuda_opencv.cu src/shared/utils.cpp src/shared/utils.cu src/utils_cuda_opencv.cu)
+set(CUDA_OPENCV_SRC src/cuda_opencv/shape_detector_cuda_opencv.cu src/shared/shared_utils.cpp src/shared/shared_utils.cu src/cuda_opencv/utils_cuda_opencv.cu)
 set(CUDA_OPENCV_INCLUDES ${CMAKE_SOURCE_DIR}/include)
 set(CUDA_OPENCV_LINK_LIBS ${OpenCV_LIBS} opencv_cudaimgproc cuda)
 message("==> CUDA_OPENCV_SRC = \"${CUDA_OPENCV_SRC}\"")

@@ -4,8 +4,7 @@
 #include <opencv2/cudaimgproc.hpp>
 
 
-#include <shared/utils.h>
-#include <shared/utils.cuh>
+#include <shared_utils.cuh>
 #include <debug.cuh>
 
 void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst, int blockSize, double C);

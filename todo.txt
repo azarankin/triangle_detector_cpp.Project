@@ -32,5 +32,5 @@ each test cleaning after itself + parrelel responsible for output file saving
 CUDA Error Handler
 CI CD in GITHUB for the tests
 PCH
-
-
+CUDA Error handler
+professionally refoldering
