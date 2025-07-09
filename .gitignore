@@ -1,7 +1,7 @@
 build/
 out/
-test/current_output
-test/archive_current_output
+tests/current_output
+tests/archive_current_output
 
 # third party
 third_party/*

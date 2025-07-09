@@ -27,6 +27,12 @@ message("==> OpenCV_LIBS = \"${OpenCV_LIBS}\"")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 message("==> CMAKE_POSITION_INDEPENDENT_CODE = \"${CMAKE_POSITION_INDEPENDENT_CODE}\"")
 
+# ---- Debug Configuration ----
+set(DEBUG_IMAGE_DEFAULT_DIR "${CMAKE_SOURCE_DIR}/debug")
+add_compile_definitions(
+    DEBUG_IMAGE_DEFAULT_DIR="${DEBUG_IMAGE_DEFAULT_DIR}"
+)
+#file(MAKE_DIRECTORY "${DEBUG_IMAGE_DEFAULT_DIR}") # create debug directory if it doesn't exist
 
 
 # Test output paths
@@ -132,8 +138,8 @@ endfunction()
 # ---- Targets ----
 ## Debug Defines
 set(DEBUG_DEFINES
-    ENABLE_DEBUG_SAVE
-    DEBUG_OUTPUT_DIR="${TEST_OUTPUT_DIRECTORY}"
+    ENABLE_DEBUG_IMAGES
+    DEBUG_IMAGE_DIR="${TEST_OUTPUT_DIRECTORY}/debug"
     TEST_OUTPUT_DIRECTORY="${TEST_OUTPUT_DIRECTORY}"
     TEST_OUTPUT_ARCHIVE_DIRECTORY="${TEST_OUTPUT_ARCHIVE_DIRECTORY}"
 )

@@ -7,13 +7,16 @@
 #include <shared_utils.cuh>
 #include <debug.cuh>
 
-void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst, int blockSize, double C);
 
-void cuda_gray_filter(cv::cuda::GpuMat& gpu_frame ,cv::cuda::GpuMat& gpu_gray);
 
-void cuda_gaussian_blur_filter(cv::cuda::GpuMat& gpu_gray, cv::cuda::GpuMat& gpu_blur);
+void cuda_gray_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst);
 
-void cuda_adaptive_threshold_filter(cv::cuda::GpuMat& gpu_blur, cv::cuda::GpuMat& gpu_thresh);
 
-void cuda_threshold_filter(cv::cuda::GpuMat& gpu_blur, cv::cuda::GpuMat& gpu_thresh);
+void cuda_gaussian_blur_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst);
+
+
+void cuda_adaptive_threshold_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst);
+
+
+void cuda_threshold_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst);
 

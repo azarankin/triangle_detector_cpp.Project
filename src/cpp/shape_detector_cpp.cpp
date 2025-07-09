@@ -1,6 +1,5 @@
 #include <shape_detector_common.h>
 #include <utils_cpp.h>
-#include <debug.h>
 
 
 std::string print_message() 

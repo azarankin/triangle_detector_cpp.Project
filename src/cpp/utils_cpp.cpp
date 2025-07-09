@@ -1,5 +1,5 @@
 #include <utils_cpp.h>
-
+#include <debug.h>
 
 void drawEquilateralTriangle(cv::Mat& img, cv::Size size, int margin)
 {
@@ -14,28 +14,30 @@ void drawEquilateralTriangle(cv::Mat& img, cv::Size size, int margin)
 
 
 
-void gray_filter(cv::Mat& target_frame ,cv::Mat& target_gray)
+void gray_filter(const cv::Mat& src, cv::Mat& dst)
 {
-    cv::cvtColor(target_frame, target_gray, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(src, dst, cv::COLOR_BGR2GRAY);
+    SAVE_DEBUG_IMAGE(dst);
 }
 
 
-void gaussian_blur_filter(cv::Mat& target_gray, cv::Mat& blured)
+void gaussian_blur_filter(const cv::Mat& src, cv::Mat& dst)
 {
-    cv::GaussianBlur(target_gray, blured, cv::Size(5, 5), 0);
+    cv::GaussianBlur(src, dst, cv::Size(5, 5), 0);
+    SAVE_DEBUG_IMAGE(dst);
 }
 
 
-void adaptive_threshold_filter(cv::Mat& blured, cv::Mat& thresh2)
+void adaptive_threshold_filter(const cv::Mat& src, cv::Mat& dst)
 {
-    cv::adaptiveThreshold(blured, thresh2, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 5);
+    cv::adaptiveThreshold(src, dst, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 5);
+    SAVE_DEBUG_IMAGE(dst);
 }
 
 
-
-void threshold_filter(cv::Mat& blured, cv::Mat& thresh1)
+void threshold_filter(const cv::Mat& src, cv::Mat& dst)
 {
-    cv::threshold(blured, thresh1, 127, 255, 0);
+    cv::threshold(src, dst, 127, 255, cv::THRESH_BINARY);
+    SAVE_DEBUG_IMAGE(dst);
 }
-
 

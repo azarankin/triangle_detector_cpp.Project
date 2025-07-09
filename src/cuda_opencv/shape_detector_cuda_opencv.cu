@@ -1,7 +1,5 @@
 #include <shape_detector_common.h>
 #include <utils_cuda_opencv.cuh>
-#include <debug.cuh>
-#include <debug.h>
 
 
 #include <cuda_runtime.h>

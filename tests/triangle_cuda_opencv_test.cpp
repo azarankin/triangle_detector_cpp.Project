@@ -46,7 +46,6 @@ TEST_F(CUDAOpenCVTest, GenerateTriangle) /*cuda finish*/
 
 TEST_F(CUDAOpenCVTest, DetectTriangleContour) 
 {
-    //g_debug_config.prefix = "cuda_detect_contour";
     auto template_contour = find_shape_contour(triangle_img);
     cv::Mat triangle_image = cv::imread(triangle_img, cv::IMREAD_COLOR);
     auto result = draw_contour_on_image(triangle_image, template_contour);
@@ -56,7 +55,6 @@ TEST_F(CUDAOpenCVTest, DetectTriangleContour)
 
 TEST_F(CUDAOpenCVTest, DetectTriangleContourOnAnother) 
 {
-    //g_debug_config.prefix = "cuda_contour_compare";
     auto template_contour = find_shape_contour(triangle_img);
     cv::Mat other_triangle_image = cv::imread(other_triangle_img, cv::IMREAD_COLOR);
     auto detected_contours = contour_compare(other_triangle_image, template_contour);

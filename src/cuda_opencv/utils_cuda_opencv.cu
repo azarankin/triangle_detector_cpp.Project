@@ -1,5 +1,5 @@
 #include <utils_cuda_opencv.cuh>
-
+#include <debug.cuh>
 
 // תחליף את adaptiveThreshold על CPU בלוגיקה CUDA הזו:
 void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst, int blockSize, double C) 
@@ -19,28 +19,28 @@ void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst,
 }
 
 
-
-void cuda_gray_filter(cv::cuda::GpuMat& gpu_frame ,cv::cuda::GpuMat& gpu_gray)
+void cuda_gray_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
 {
-    cv::cuda::cvtColor(gpu_frame, gpu_gray, cv::COLOR_BGR2GRAY);
-}
-
-void cuda_gaussian_blur_filter(cv::cuda::GpuMat& gpu_gray, cv::cuda::GpuMat& gpu_blur)
-{
-    auto gauss_filter = cv::cuda::createGaussianFilter(gpu_gray.type(), gpu_gray.type(), cv::Size(5, 5), 0);
-    gauss_filter->apply(gpu_gray, gpu_blur);
-}
-
-void cuda_adaptive_threshold_filter(cv::cuda::GpuMat& gpu_blur, cv::cuda::GpuMat& gpu_thresh)
-{
-    cuda_adaptive_threshold(gpu_blur, gpu_thresh, /*blockSize=*/11, /*C=*/5);
+    cv::cuda::cvtColor(src, dst, cv::COLOR_BGR2GRAY);
+    
 }
 
 
-void cuda_threshold_filter(cv::cuda::GpuMat& gpu_blur, cv::cuda::GpuMat& gpu_thresh)
+void cuda_gaussian_blur_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
 {
-    cv::cuda::threshold(gpu_blur, gpu_thresh, 127, 255, cv::THRESH_BINARY);
+    auto gauss_filter = cv::cuda::createGaussianFilter(src.type(), src.type(), cv::Size(5, 5), 0);
+    gauss_filter->apply(src, dst);
 }
 
 
+void cuda_adaptive_threshold_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
+{
+    cuda_adaptive_threshold(src, dst, /*blockSize=*/11, /*C=*/5);
+}
+
+
+void cuda_threshold_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
+{
+    cv::cuda::threshold(src, dst, 127, 255, cv::THRESH_BINARY);
+}
 

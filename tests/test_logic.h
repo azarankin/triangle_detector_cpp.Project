@@ -78,32 +78,44 @@ protected:
         }
         return s;
     }
+     
     
-    void archive_directory(const fs::path& src, const fs::path& archive_root, const std::string& test_name) {
-        if (!fs::exists(src) || fs::is_empty(src)) return;
 
-        // sanitize test_name for safe directory name
-        std::string safe_name = sanitize_filename(test_name);
-        fs::path archive_dir = archive_root / safe_name;
 
-        // מחק תיקיית יעד אם קיימת (כולל תכולה)
-        if (fs::exists(archive_dir)) {
-            fs::remove_all(archive_dir);
-        }
+ 
+void archive_directory(const fs::path& src, const fs::path& archive_dir, const std::string& test_name = "") {
+    if (!fs::exists(src) || fs::is_empty(src)) return;
 
-        // צור תיקיית יעד מחדש
-        fs::create_directories(archive_dir);
+    fs::path final_archive_dir = test_name.empty() ? archive_dir : archive_dir / test_name;
+    
+    if (fs::exists(final_archive_dir)) {
+        fs::remove_all(final_archive_dir);
+    }
+    fs::create_directories(final_archive_dir);
 
-        // העתקה
-        for (const auto& entry : fs::directory_iterator(src)) {
-            fs::copy(entry, archive_dir / entry.path().filename(), fs::copy_options::recursive);
-        }
+    for (const auto& entry : fs::recursive_directory_iterator(src)) {
+        // הנתיב היחסי מהשורש src
+        fs::path rel_path = fs::relative(entry.path(), src);
+        fs::path dst_path = final_archive_dir / rel_path;
 
-        // מחיקת המקור
-        for (const auto& entry : fs::directory_iterator(src)) {
-            fs::remove_all(entry);
+        std::cout << "Copying: " << entry.path() << " -> " << dst_path << std::endl;
+
+        if (fs::is_directory(entry)) {
+            fs::create_directories(dst_path);
+        } else if (fs::is_regular_file(entry)) {
+            fs::create_directories(dst_path.parent_path());
+            fs::copy_file(entry.path(), dst_path, fs::copy_options::overwrite_existing);
         }
     }
+
+    fs::remove_all(src);
+    fs::create_directories(src);
+}
+
+
+
+
+
 
     std::string get_current_test_name() 
     {
