@@ -76,3 +76,13 @@ std::string TestLogic::get_current_test_name()
     }
     return "UnknownTest";
 }
+
+void TestLogic::image_save(const fs::path& path, const cv::Mat& img)
+{
+    if (path.empty()) return;
+    if (img.empty()) return;
+
+    std::filesystem::create_directories(path.parent_path());
+    //std::vector<int> params = {cv::IMWRITE_PNG_COMPRESSION, 0};
+    cv::imwrite(path, img);
+}

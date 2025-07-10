@@ -34,7 +34,7 @@ protected:
     fs::path archive_current_output = std::string(TEST_OUTPUT_ARCHIVE_DIRECTORY).empty()
         ? dir / "archive_current_output"
         : fs::path(TEST_OUTPUT_ARCHIVE_DIRECTORY);
-
+    fs::path test_output = current_output / "test_output";
     // Helper function for image similarity check
     void image_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol = 1e-6);
     void img_save_the_difference_between_images(const fs::path& diff_img_path, cv::Mat& expected, cv::Mat& result );
@@ -42,12 +42,16 @@ protected:
     std::string sanitize_filename(const std::string& name);
     void archive_directory(const fs::path& src, const fs::path& archive_dir);
     std::string get_current_test_name();
+
+    void image_save(const fs::path& path, const cv::Mat& img);
+
+
 };
 
 class UtilsTest : public TestLogic
 {
 protected:
-    fs::path original_img = reference_input / "original_image.png";
+    fs::path original_img = reference_input / "utils_original_image.png";
     fs::path input_gray_img = reference_input / "utils_gray_filter.png";
     fs::path expected_gray_filter_img = reference_output / "utils_gray_filter.png";;
     fs::path expected_gaussian_blur_filter_img = reference_output / "utils_gaussian_blur_filter.png";

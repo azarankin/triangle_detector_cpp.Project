@@ -33,14 +33,27 @@ void gray_filter(const cv::Mat& src, cv::Mat& dst)
 
 void gaussian_blur_filter(const cv::Mat& src, cv::Mat& dst)
 {
-    cv::GaussianBlur(src, dst, cv::Size(5, 5), 0);
+    // השתמש בחישוב אוטומטי של sigma כמו הגירסה המקורית
+    cv::GaussianBlur(src, dst, cv::Size(5, 5), 0, 0, cv::BORDER_REFLECT101);
     SAVE_DEBUG_IMAGE(dst);
 }
 
 
 void adaptive_threshold_filter(const cv::Mat& src, cv::Mat& dst)
 {
-    cv::adaptiveThreshold(src, dst, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 5);
+    // גירסת CPU שמחקה את האלגוריתם של CUDA
+    // (1) ממוצע לוקאלי – boxFilter CPU
+    cv::Mat mean_local;
+    cv::boxFilter(src, mean_local, src.type(), cv::Size(11, 11));
+
+    // (2) מחסרים C מהמטריצה
+    cv::Mat threshMat;
+    cv::subtract(mean_local, cv::Scalar::all(5), threshMat);
+
+    // (3) משווים: src > threshMat ? 255 : 0 (THRESH_BINARY)
+    cv::compare(src, threshMat, dst, cv::CMP_GT); // dst = mask
+    // dst יוצא בינארי (0/255)
+    
     SAVE_DEBUG_IMAGE(dst);
 }
 

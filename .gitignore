@@ -2,6 +2,7 @@ build/
 out/
 tests/current_output
 tests/archive_current_output
+tests/current_output/test_output
 logs/
 !logs/.gitkeep
 

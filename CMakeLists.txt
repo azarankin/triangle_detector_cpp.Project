@@ -73,13 +73,31 @@ add_custom_target(triangle_detector_cpu_logic
     LINK_LIBS ${CPU_LINK_LIBS}
 )
 
-# C++ TEST Code FILES
+## C++ TEST Code FILES
 add_custom_target(triangle_detector_cpp_for_test
     TYPE LIBRARY
     SOURCES ${CPU_SRC} ${CPU_DEBUG_SRC}
     LINK_LIBS ${CPU_LINK_LIBS}
     DEFINES ${DEBUG_DEFINES_CPU}
 )
+## CPU Tests
+add_gtest_exec(
+  triangle_detector_cpp_tests
+  SOURCES ${TEST_LOGIC_SRC} tests/triangle_cpp_test.cpp
+  LIBS_TO_LINK triangle_detector_cpp_for_test
+  OUTPUT_DIRS ${CPU_TEST_OUTPUT_DIRECTORIES}
+)
+add_gtest_exec(
+  utils_cpp_tests
+  SOURCES ${TEST_LOGIC_SRC} tests/utils_cpp_test.cpp
+  LIBS_TO_LINK triangle_detector_cpp_for_test
+  OUTPUT_DIRS ${CPU_TEST_OUTPUT_DIRECTORIES}
+)
+
+
+
+
+
 
 
 ## CUDA OpenCV Code Files
@@ -96,6 +114,22 @@ add_custom_target(triangle_detector_cuda_opencv_for_test
     LINK_LIBS ${CUDA_OPENCV_LINK_LIBS}
     DEFINES ${DEBUG_DEFINES_CUDA_OPENCV}
 )
+## CUDA Tests
+add_gtest_exec(
+  triangle_detector_cuda_opencv_tests
+  SOURCES ${TEST_LOGIC_SRC} tests/triangle_cuda_opencv_test.cu
+  LIBS_TO_LINK triangle_detector_cuda_opencv_for_test
+  OUTPUT_DIRS ${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}
+)
+add_gtest_exec(
+  utils_cuda_opencv_tests
+  SOURCES ${TEST_LOGIC_SRC} tests/utils_cuda_opencv_test.cu
+  LIBS_TO_LINK triangle_detector_cuda_opencv_for_test
+  OUTPUT_DIRS ${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}
+)
+
+
+
 
 #---- Executables ----
 ## CPU Demo
@@ -107,26 +141,13 @@ add_custom_target(triangle_detector_cpp_demo
 )
 
 
-## CPU Tests
-add_gtest_exec(
-  triangle_detector_cpp_tests
-  SOURCES ${TEST_LOGIC_SRC} tests/triangle_cpp_test.cpp tests/utils_cpp_test.cpp
-  LIBS_TO_LINK triangle_detector_cpp_for_test
-  OUTPUT_DIRS ${CPU_TEST_OUTPUT_DIRECTORIES}
-)
 
-
-## CUDA Tests
-add_gtest_exec(
-  triangle_detector_cuda_opencv_tests
-  SOURCES ${TEST_LOGIC_SRC} tests/triangle_cuda_opencv_test.cpp
-  LIBS_TO_LINK triangle_detector_cuda_opencv_for_test
-  OUTPUT_DIRS ${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}
-)
-
-
-
-set(ALL_TESTS_DEPENDENCIES triangle_detector_cpp_tests triangle_detector_cuda_opencv_tests)
+set(ALL_TESTS_DEPENDENCIES 
+    triangle_detector_cpp_tests
+    utils_cpp_tests
+    triangle_detector_cuda_opencv_tests
+    utils_cuda_opencv_tests
+  )
 
 add_gtest_exec(
   run_all_tests

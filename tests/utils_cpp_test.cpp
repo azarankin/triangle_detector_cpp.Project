@@ -32,9 +32,9 @@ protected:
         TestLogic::image_similarity_asserts(expected_image, result, tol);
     }
 
-    cv::Mat get_gray_filtered_img(const std::string& expected_gray_filter_img) 
+    cv::Mat get_gray_filtered_img(const std::string& input_gray_img) 
     {
-        return cv::imread(expected_gray_filter_img, cv::IMREAD_GRAYSCALE);
+        return cv::imread(input_gray_img, cv::IMREAD_GRAYSCALE);
     }
 };
 
