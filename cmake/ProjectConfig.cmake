@@ -1,0 +1,73 @@
+# ---- Project Configuration ----
+## Set Logic Source for Tests
+set(TEST_LOGIC_SRC tests/test_logic.cpp)
+## Test output paths
+set(TEST_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/current_output")
+set(TEST_OUTPUT_ARCHIVE_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/archive_current_output")
+set(CPU_TEST_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
+set(CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
+set(ALL_TESTS_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY}) ## additional output directory list
+
+## Debug Targets
+set(DEBUG_DEFINES
+    ENABLE_DEBUG_IMAGES ON
+    DEBUG_IMAGE_DIR="${TEST_OUTPUT_DIRECTORY}/debug"
+    TEST_OUTPUT_DIRECTORY="${TEST_OUTPUT_DIRECTORY}"
+    TEST_OUTPUT_ARCHIVE_DIRECTORY="${TEST_OUTPUT_ARCHIVE_DIRECTORY}"
+)
+set(CPU_DEBUG_SRC src/debug.cpp)
+set(DEBUG_DEFINES_CPU ${DEBUG_DEFINES})
+set(DEBUG_DEFINES_CUDA_OPENCV ${DEBUG_DEFINES})
+set(CUDA_OPENCV_DEBUG_SRC src/debug.cpp src/debug.cu)
+
+# ---- Projects Compilation ----
+#set(CPU_INCLUDE ${CMAKE_SOURCE_DIR}/include) ## set as include_directories(${CMAKE_SOURCE_DIR}/include) for all global includes
+set(CPU_LINK_LIBS ${OpenCV_LIBS})
+#set(CUDA_OPENCV_INCLUDES ${CMAKE_SOURCE_DIR}/include)
+set(CUDA_OPENCV_LINK_LIBS ${OpenCV_LIBS} opencv_cudaimgproc cuda)
+
+# ---- Projects Logs ----
+set(LOG_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake_logs.log" CACHE INTERNAL "")
+set(ERROR_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake_errors.log" CACHE INTERNAL "")
+
+
+include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
+
+
+log_message(" # ---- Project Configuration ----
+## Set Logic Source for Tests
+TEST_LOGIC_SRC = \"${TEST_LOGIC_SRC}\"
+## Test output paths
+TEST_OUTPUT_DIRECTORY = \"${TEST_OUTPUT_DIRECTORY}\"
+TEST_OUTPUT_ARCHIVE_DIRECTORY = \"${TEST_OUTPUT_ARCHIVE_DIRECTORY}\"
+CPU_TEST_OUTPUT_DIRECTORIES = \"${CPU_TEST_OUTPUT_DIRECTORIES}\"
+CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES = \"${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}\"
+ALL_TESTS_OUTPUT_DIRECTORIES = \"${ALL_TESTS_OUTPUT_DIRECTORIES}\"  ## additional output directory list
+## Debug Targets
+DEBUG_DEFINES = \"${DEBUG_DEFINES}\"
+CPU_DEBUG_SRC = \"${CPU_DEBUG_SRC}\"
+DEBUG_DEFINES_CPU = \"${DEBUG_DEFINES_CPU}\"
+DEBUG_DEFINES_CUDA_OPENCV = \"${DEBUG_DEFINES_CUDA_OPENCV}\"
+CUDA_OPENCV_DEBUG_SRC = \"${CUDA_OPENCV_DEBUG_SRC}\"
+# ---- Projects Compilation ----
+CPU_LINK_LIBS = \"${CPU_LINK_LIBS}\"
+CUDA_OPENCV_LINK_LIBS = \"${CUDA_OPENCV_LINK_LIBS}\"
+# ---- Projects Logs ----
+LOG_FILE_PATH = \"${LOG_FILE_PATH}
+ERROR_FILE_PATH = \"${ERROR_FILE_PATH}\"
+")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
