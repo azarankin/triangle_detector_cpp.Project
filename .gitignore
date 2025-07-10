@@ -2,6 +2,8 @@ build/
 out/
 tests/current_output
 tests/archive_current_output
+logs/
+!logs/.gitkeep
 
 # third party
 third_party/*

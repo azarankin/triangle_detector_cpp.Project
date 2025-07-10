@@ -36,7 +36,7 @@ include(GoogleTest)
 ## Log the start of the configuration
 include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
 reset_log_file()
-reset_error_file()
+#reset_error_file()
 
 
 # ---- Include CMake Modules ----

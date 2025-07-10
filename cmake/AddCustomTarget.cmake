@@ -18,13 +18,14 @@ function(add_custom_target target_name)
     ")
 
     if(NOT DEFINED ARG_TYPE)
-        message(FATAL_ERROR "add_custom_target: Missing TYPE (LIBRARY or EXECUTABLE)")
         error_message("add_custom_target: Missing TYPE (LIBRARY or EXECUTABLE) for target ${target_name}")
+        message(FATAL_ERROR "add_custom_target: Missing TYPE (LIBRARY or EXECUTABLE)")
+        
     endif()
 
     if(NOT DEFINED ARG_SOURCES)
-        message(FATAL_ERROR "add_custom_target: Missing SOURCES for ${target_name}")
         error_message("add_custom_target: Missing SOURCES for target ${target_name}")
+        message(FATAL_ERROR "add_custom_target: Missing SOURCES for ${target_name}")
     endif()
 
     if(ARG_TYPE STREQUAL "LIBRARY")
@@ -36,8 +37,8 @@ function(add_custom_target target_name)
     elseif(ARG_TYPE STREQUAL "EXECUTABLE")
         add_executable(${target_name} ${ARG_SOURCES})
     else()
-        message(FATAL_ERROR "add_custom_target: TYPE must be LIBRARY or EXECUTABLE")
         error_message("add_custom_target: TYPE must be LIBRARY or EXECUTABLE for target ${target_name}")
+        message(FATAL_ERROR "add_custom_target: TYPE must be LIBRARY or EXECUTABLE")
     endif()
 
     if(DEFINED ARG_INCLUDES)

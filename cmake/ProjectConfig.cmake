@@ -34,25 +34,25 @@ set(ERROR_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake_errors.log" CACHE INTERNAL "
 include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
 
 
-log_message(" # ---- Project Configuration ----
-## Set Logic Source for Tests
+log_message("---- Project Configuration ----
+Set Logic Source for Tests
 TEST_LOGIC_SRC = \"${TEST_LOGIC_SRC}\"
-## Test output paths
+Test output paths
 TEST_OUTPUT_DIRECTORY = \"${TEST_OUTPUT_DIRECTORY}\"
 TEST_OUTPUT_ARCHIVE_DIRECTORY = \"${TEST_OUTPUT_ARCHIVE_DIRECTORY}\"
 CPU_TEST_OUTPUT_DIRECTORIES = \"${CPU_TEST_OUTPUT_DIRECTORIES}\"
 CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES = \"${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}\"
 ALL_TESTS_OUTPUT_DIRECTORIES = \"${ALL_TESTS_OUTPUT_DIRECTORIES}\"  ## additional output directory list
-## Debug Targets
+Debug Targets
 DEBUG_DEFINES = \"${DEBUG_DEFINES}\"
 CPU_DEBUG_SRC = \"${CPU_DEBUG_SRC}\"
 DEBUG_DEFINES_CPU = \"${DEBUG_DEFINES_CPU}\"
 DEBUG_DEFINES_CUDA_OPENCV = \"${DEBUG_DEFINES_CUDA_OPENCV}\"
 CUDA_OPENCV_DEBUG_SRC = \"${CUDA_OPENCV_DEBUG_SRC}\"
-# ---- Projects Compilation ----
+---- Projects Compilation ----
 CPU_LINK_LIBS = \"${CPU_LINK_LIBS}\"
 CUDA_OPENCV_LINK_LIBS = \"${CUDA_OPENCV_LINK_LIBS}\"
-# ---- Projects Logs ----
+---- Projects Logs ----
 LOG_FILE_PATH = \"${LOG_FILE_PATH}
 ERROR_FILE_PATH = \"${ERROR_FILE_PATH}\"
 ")
