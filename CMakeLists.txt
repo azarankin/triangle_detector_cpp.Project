@@ -6,10 +6,15 @@ set(CMAKE_MINIMUM_REQUIRED_VERSION 3.19)
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 # ---- Project Configuration ----
-set(PROJECT_NAME triangle_detector_cpp)
+set(PROJECT_NAME triangle_detector_project)
 set(PROJECT_VERSION 1.0.0)
 set(PROJECT_LANGUAGES CXX CUDA)
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
+
+
+option(ENABLE_EXECUTABLES "..." OFF)
+
+
 
 # ---- Include CMake Modules ----
 # Include custom CMake modules for project configuration, logging, and target management
@@ -23,6 +28,7 @@ add_custom_target(triangle_detector_cpu
     LINK_LIBS ${CPU_LINK_LIBS}
 )
 
+
 ## CUDA OpenCV Code Files
 add_custom_target(triangle_detector_cuda_opencv
     TYPE LIBRARY
@@ -31,25 +37,56 @@ add_custom_target(triangle_detector_cuda_opencv
 )
 
 
-#---- Executables ----
-## C++ DEMO Code Files
-add_custom_target(triangle_detector_cpu_logic
+## CUDA Code Files
+add_custom_target(triangle_detector_pure_cuda
     TYPE LIBRARY
-    SOURCES ${CPU_SRC} ${APP_LOGIC_SRC}
-    LINK_LIBS ${CPU_LINK_LIBS}
-    INCLUDES ${APP_LOGIC_INCLUDES}
-)
-## CPU Demo
-add_custom_target(triangle_detector_cpp_demo
-  TYPE EXECUTABLE
-  SOURCES ${DEMO_CPP_DIR}/demo_cpp.cpp
-  LINK_LIBS triangle_detector_cpu_logic
-  OUTPUT_DIR "${DEMO_CPP_DIR}/out"
+    SOURCES ${PURE_CUDA_SRC}
+    LINK_LIBS ${PURE_CUDA_LINK_LIBS}
 )
 
 
 
-add_subdirectory(tests)
+
+
+
+
+if(ENABLE_EXECUTABLES)
+    #---- Executables ----
+    ## C++ DEMO Code Files
+    add_custom_target(triangle_detector_cpu_logic
+        TYPE LIBRARY
+        SOURCES ${CPU_SRC} ${APP_LOGIC_SRC}
+        LINK_LIBS ${CPU_LINK_LIBS}
+        INCLUDES ${APP_LOGIC_INCLUDES}
+    )
+    ## CPU Demo
+    add_custom_target(triangle_detector_cpp_demo
+    TYPE EXECUTABLE
+    SOURCES ${DEMO_CPP_DIR}/demo_cpp.cpp
+    LINK_LIBS triangle_detector_cpu_logic
+    OUTPUT_DIR "${DEMO_CPP_DIR}/out"
+    )
+
+    ## POC Benchmark Code Files
+    # add_custom_target(utils_benchmark_poc_logic
+    #     TYPE LIBRARY
+    #     SOURCES ${BENCHMARK_ALL_UTILS_SRC} ${SHARED_UTILS_BENCHMARK_SRC}
+    #     LINK_LIBS ${BENCHMARK_LINK_LIBS}
+    # )
+    # add_custom_target(utils_benchmark
+    #   TYPE EXECUTABLE
+    #   SOURCES ${BENCHMARK_DIR}/main.cu
+    #   LINK_LIBS benchmark_poc_logic
+    #   OUTPUT_DIR "${BENCHMARK_DIR}/out"
+    #   INCLUDES ${BENCHMARK_DIR}
+    # )
+endif()
+
+
+
+
+# ---- Tests ----
+add_subdirectory(${CMAKE_SOURCE_DIR}/tests)
 
 
 

@@ -42,3 +42,5 @@ Future Seperation for CMakeLists.txt for the project and for the tests
 Add Namespace Seperation
 CMakeLists.txt Projects seperation
 fix test_logic.h paths
+set  AddCustomTarget.cmake AddGTestExec.cmake with PUBLIC and PRIVATE libraries
+Benchmark with RAM/VRAM + accuracy

@@ -9,4 +9,3 @@ void save_debug_image(const std::string& name, const cv::cuda::GpuMat& gpu_img)
     save_debug_image(name, cpu_img);
 }
 
-

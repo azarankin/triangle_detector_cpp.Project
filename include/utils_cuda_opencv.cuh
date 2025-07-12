@@ -22,3 +22,7 @@ void cuda_adaptive_threshold_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMa
 
 void cuda_threshold_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst);
 
+
+
+
+
