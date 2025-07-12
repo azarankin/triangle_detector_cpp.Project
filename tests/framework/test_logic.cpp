@@ -11,6 +11,21 @@ void TestLogic::image_similarity_asserts(const cv::Mat& expected, const cv::Mat&
     ASSERT_LT(diff, tol) << "Images are not similar enough! Diff: " << diff;
 }
 
+
+void TestLogic::image_similarity_expects(const cv::Mat& expected, const cv::Mat& result, double tol)
+{
+    EXPECT_FALSE(expected.empty()) << "Reference image is missing!";
+    EXPECT_FALSE(result.empty()) << "Result image is empty!";
+    EXPECT_EQ(result.size(), expected.size()) << "Image sizes differ";
+    EXPECT_EQ(result.type(), expected.type()) << "Image types differ";
+    if (!expected.empty() && !result.empty() && 
+        result.size() == expected.size() && result.type() == expected.type())
+    {
+        double diff = cv::norm(result, expected, cv::NORM_L2);
+        EXPECT_LT(diff, tol) << "Images are not similar enough! Diff: " << diff;
+    }
+}
+
 void TestLogic::img_save_the_difference_between_images(const fs::path& diff_img_path, cv::Mat& expected, cv::Mat& result)
 {
     cv::Mat diff;

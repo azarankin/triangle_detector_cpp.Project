@@ -1,62 +1,13 @@
+# CMakeLists.txt
+# This file is the main CMake configuration for the Triangle Detector project.
 
-# ---- CMake Configuration ----
-set(CMAKE_MINIMUM_REQUIRED_VERSION 3.19)
-cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
-
-# ---- Project Configuration ----
-set(PROJECT_NAME triangle_detector_cpp)
-set(PROJECT_VERSION 1.0.0)
-set(PROJECT_LANGUAGES CXX CUDA)
-project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
-
-# ---- Global Configuration ----
-#set(CMAKE_BUILD_TYPE #)
-enable_language(CUDA)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CUDA_STANDARD 17)
-#set(CMAKE_CUDA_ARCHITECTURES 89) ## Set inside CMakePresets.json
-#set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc) # CUDA Path ## Set inside CMakePresets.json
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xptxas -O3 -DNDEBUG")
-set(CMAKE_POSITION_INDEPENDENT_CODE ON) ## Library build
-set(COMPILER_WARNINGS -Wall -Wextra -Wno-unused-parameter)
-add_compile_options(${COMPILER_WARNINGS})   ## Show errors on production # For each target target_compile_options(<target_name> PRIVATE -Wall -Wextra)
-set(INCLUDE_PROJECT_DIRECTORIES ${CMAKE_SOURCE_DIR}/include)
-include_directories(${INCLUDE_PROJECT_DIRECTORIES}) ## Project Include Directories  # For each target  target_include_directories(<target_name> PUBLIC ${CMAKE_SOURCE_DIR}/include)
-set(DEBUG_IMAGE_DEFAULT_DIR "${CMAKE_SOURCE_DIR}/debug")
-add_compile_definitions(DEBUG_IMAGE_DEFAULT_DIR="${DEBUG_IMAGE_DEFAULT_DIR}") ## Project Debug Default Configuration  #file(MAKE_DIRECTORY "${DEBUG_IMAGE_DEFAULT_DIR}") # create debug directory if it doesn't exist
-
-## Dependencies
-find_package(OpenCV REQUIRED)
-add_subdirectory(third_party/googletest)
-enable_testing()
-include(GoogleTest)
-
-## Log the start of the configuration
-include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
-reset_log_file()
-#reset_error_file()
-
+add_subdirectory(tests)
 
 # ---- Include CMake Modules ----
 # Include custom CMake modules for project configuration, logging, and target management
 include(${CMAKE_SOURCE_DIR}/cmake/ProjectConfig.cmake)
-
-
-include(${CMAKE_SOURCE_DIR}/cmake/Logs_CMakeLists.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/AddCustomTarget.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/AddGTestExec.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/AddPostBuildClearOutput.cmake)
-
-
-
-# ---- Projects Compilation ----
-## C++ Code Files
-set(CPU_SRC src/cpp/shape_detector_cpp.cpp src/shared/shared_utils.cpp src/cpp/utils_cpp.cpp)
-## CUDA OpenCV Code Files
-set(CUDA_OPENCV_SRC src/cuda_opencv/shape_detector_cuda_opencv.cu src/shared/shared_utils.cpp src/shared/shared_utils.cu src/cuda_opencv/utils_cuda_opencv.cu)
-
 
 
 ## C++ Code Files

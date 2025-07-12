@@ -41,6 +41,8 @@ void gaussian_blur_filter(const cv::Mat& src, cv::Mat& dst)
 
 void adaptive_threshold_filter(const cv::Mat& src, cv::Mat& dst)
 {
+    // cv::adaptiveThreshold(src, dst, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 5);
+    // SAVE_DEBUG_IMAGE(dst);
     // גירסת CPU שמחקה את האלגוריתם של CUDA
     // (1) ממוצע לוקאלי – boxFilter CPU
     cv::Mat mean_local;

@@ -38,3 +38,6 @@ Test Running time error
 Fix Cpp Folder Remove protector like in Cmake
 Test coverage
 benchmark samples
+Future Seperation for CMakeLists.txt for the project and for the tests
+Add Namespace Seperation
+CMakeLists.txt Projects seperation

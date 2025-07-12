@@ -1,28 +1,6 @@
 === CMake Build Log ===
-Compiling: 2025-07-10 23:08:38
+Compiling: 2025-07-12 15:06:20
 =======================
-
----- Project Configuration ----
-Set Logic Source for Tests
-TEST_LOGIC_SRC = "tests/test_logic.cpp"
-Test output paths
-TEST_OUTPUT_DIRECTORY = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output"
-TEST_OUTPUT_ARCHIVE_DIRECTORY = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output"
-CPU_TEST_OUTPUT_DIRECTORIES = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output"
-CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output"
-ALL_TESTS_OUTPUT_DIRECTORIES = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output"  ## additional output directory list
-Debug Targets
-DEBUG_DEFINES = "ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output""
-CPU_DEBUG_SRC = "src/debug.cpp"
-DEBUG_DEFINES_CPU = "ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output""
-DEBUG_DEFINES_CUDA_OPENCV = "ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output""
-CUDA_OPENCV_DEBUG_SRC = "src/debug.cpp;src/debug.cu"
----- Projects Compilation ----
-CPU_LINK_LIBS = "opencv_calib3d;opencv_core;opencv_dnn;opencv_features2d;opencv_flann;opencv_gapi;opencv_highgui;opencv_imgcodecs;opencv_imgproc;opencv_ml;opencv_objdetect;opencv_photo;opencv_stitching;opencv_video;opencv_videoio;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cudaarithm;opencv_cudabgsegm;opencv_cudacodec;opencv_cudafeatures2d;opencv_cudafilters;opencv_cudaimgproc;opencv_cudalegacy;opencv_cudaobjdetect;opencv_cudaoptflow;opencv_cudastereo;opencv_cudawarping;opencv_cudev;opencv_datasets;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_optflow;opencv_phase_unwrapping;opencv_plot;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_superres;opencv_surface_matching;opencv_text;opencv_tracking;opencv_videostab;opencv_wechat_qrcode;opencv_xfeatures2d;opencv_ximgproc;opencv_xobjdetect;opencv_xphoto"
-CUDA_OPENCV_LINK_LIBS = "opencv_calib3d;opencv_core;opencv_dnn;opencv_features2d;opencv_flann;opencv_gapi;opencv_highgui;opencv_imgcodecs;opencv_imgproc;opencv_ml;opencv_objdetect;opencv_photo;opencv_stitching;opencv_video;opencv_videoio;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cudaarithm;opencv_cudabgsegm;opencv_cudacodec;opencv_cudafeatures2d;opencv_cudafilters;opencv_cudaimgproc;opencv_cudalegacy;opencv_cudaobjdetect;opencv_cudaoptflow;opencv_cudastereo;opencv_cudawarping;opencv_cudev;opencv_datasets;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_optflow;opencv_phase_unwrapping;opencv_plot;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_superres;opencv_surface_matching;opencv_text;opencv_tracking;opencv_videostab;opencv_wechat_qrcode;opencv_xfeatures2d;opencv_ximgproc;opencv_xobjdetect;opencv_xphoto;opencv_cudaimgproc;cuda"
----- Projects Logs ----
-LOG_FILE_PATH = "/home/arthur/Desktop/triangle_detector_cpp.Project/logs/cmake_logs.log
-ERROR_FILE_PATH = "/home/arthur/Desktop/triangle_detector_cpp.Project/logs/cmake_errors.log"
 
 ---- CMake Configuration ----
 cmake_minimum_required(VERSION 3.19)
@@ -49,6 +27,28 @@ add_subdirectory(third_party/googletest)
 enable_testing()
 include(GoogleTest)
 
+---- Project Configuration ----
+Set Logic Source for Tests
+TEST_LOGIC_SRC = "tests/framework/test_logic.cpp"
+Test output paths
+TEST_OUTPUT_DIRECTORY = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output"
+TEST_OUTPUT_ARCHIVE_DIRECTORY = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output"
+CPU_TEST_OUTPUT_DIRECTORIES = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output"
+CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output"
+ALL_TESTS_OUTPUT_DIRECTORIES = "/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output"  ## additional output directory list
+Debug Targets
+DEBUG_DEFINES = "ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output""
+CPU_DEBUG_SRC = "src/debug.cpp"
+DEBUG_DEFINES_CPU = "ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output""
+DEBUG_DEFINES_CUDA_OPENCV = "ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output""
+CUDA_OPENCV_DEBUG_SRC = "src/debug.cpp;src/debug.cu"
+---- Projects Compilation ----
+CPU_LINK_LIBS = "opencv_calib3d;opencv_core;opencv_dnn;opencv_features2d;opencv_flann;opencv_gapi;opencv_highgui;opencv_imgcodecs;opencv_imgproc;opencv_ml;opencv_objdetect;opencv_photo;opencv_stitching;opencv_video;opencv_videoio;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cudaarithm;opencv_cudabgsegm;opencv_cudacodec;opencv_cudafeatures2d;opencv_cudafilters;opencv_cudaimgproc;opencv_cudalegacy;opencv_cudaobjdetect;opencv_cudaoptflow;opencv_cudastereo;opencv_cudawarping;opencv_cudev;opencv_datasets;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_optflow;opencv_phase_unwrapping;opencv_plot;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_superres;opencv_surface_matching;opencv_text;opencv_tracking;opencv_videostab;opencv_wechat_qrcode;opencv_xfeatures2d;opencv_ximgproc;opencv_xobjdetect;opencv_xphoto"
+CUDA_OPENCV_LINK_LIBS = "opencv_calib3d;opencv_core;opencv_dnn;opencv_features2d;opencv_flann;opencv_gapi;opencv_highgui;opencv_imgcodecs;opencv_imgproc;opencv_ml;opencv_objdetect;opencv_photo;opencv_stitching;opencv_video;opencv_videoio;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cudaarithm;opencv_cudabgsegm;opencv_cudacodec;opencv_cudafeatures2d;opencv_cudafilters;opencv_cudaimgproc;opencv_cudalegacy;opencv_cudaobjdetect;opencv_cudaoptflow;opencv_cudastereo;opencv_cudawarping;opencv_cudev;opencv_datasets;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_optflow;opencv_phase_unwrapping;opencv_plot;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_superres;opencv_surface_matching;opencv_text;opencv_tracking;opencv_videostab;opencv_wechat_qrcode;opencv_xfeatures2d;opencv_ximgproc;opencv_xobjdetect;opencv_xphoto;opencv_cudaimgproc;cuda"
+---- Projects Logs ----
+LOG_FILE_PATH = "/home/arthur/Desktop/triangle_detector_cpp.Project/logs/cmake_logs.log
+ERROR_FILE_PATH = "/home/arthur/Desktop/triangle_detector_cpp.Project/logs/cmake_errors.log"
+
 add_custom_target: triangle_detector_cpu
         TYPE: LIBRARY
         SOURCES: src/cpp/shape_detector_cpp.cpp;src/shared/shared_utils.cpp;src/cpp/utils_cpp.cpp
@@ -73,25 +73,25 @@ add_custom_target: triangle_detector_cpp_for_test
         LIBRARY_TYPE: 
         INCLUDES: 
         LINK_LIBS: opencv_calib3d;opencv_core;opencv_dnn;opencv_features2d;opencv_flann;opencv_gapi;opencv_highgui;opencv_imgcodecs;opencv_imgproc;opencv_ml;opencv_objdetect;opencv_photo;opencv_stitching;opencv_video;opencv_videoio;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cudaarithm;opencv_cudabgsegm;opencv_cudacodec;opencv_cudafeatures2d;opencv_cudafilters;opencv_cudaimgproc;opencv_cudalegacy;opencv_cudaobjdetect;opencv_cudaoptflow;opencv_cudastereo;opencv_cudawarping;opencv_cudev;opencv_datasets;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_optflow;opencv_phase_unwrapping;opencv_plot;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_superres;opencv_surface_matching;opencv_text;opencv_tracking;opencv_videostab;opencv_wechat_qrcode;opencv_xfeatures2d;opencv_ximgproc;opencv_xobjdetect;opencv_xphoto
-        DEFINES: ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output"
+        DEFINES: ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output"
         OUTPUT_DIR: 
     
 add_gtest_exec: triangle_detector_cpp_tests
-        SOURCES: tests/test_logic.cpp;tests/triangle_cpp_test.cpp
+        SOURCES: tests/framework/test_logic.cpp;tests/triangle_cpp_test.cpp
         LIBS_TO_LINK: triangle_detector_cpp_for_test
-        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
         DEPENDENCIES: 
     
-Directories to clear for target triangle_detector_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output
-Directories to clear for target triangle_detector_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+Directories to clear for target triangle_detector_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output
+Directories to clear for target triangle_detector_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
 add_gtest_exec: utils_cpp_tests
-        SOURCES: tests/test_logic.cpp;tests/utils_cpp_test.cpp
+        SOURCES: tests/framework/test_logic.cpp;tests/utils_cpp_test.cpp
         LIBS_TO_LINK: triangle_detector_cpp_for_test
-        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
         DEPENDENCIES: 
     
-Directories to clear for target utils_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output
-Directories to clear for target utils_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+Directories to clear for target utils_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output
+Directories to clear for target utils_cpp_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
 add_custom_target: triangle_detector_cuda_opencv
         TYPE: LIBRARY
         SOURCES: src/cuda_opencv/shape_detector_cuda_opencv.cu;src/shared/shared_utils.cpp;src/shared/shared_utils.cu;src/cuda_opencv/utils_cuda_opencv.cu
@@ -107,25 +107,25 @@ add_custom_target: triangle_detector_cuda_opencv_for_test
         LIBRARY_TYPE: 
         INCLUDES: 
         LINK_LIBS: opencv_calib3d;opencv_core;opencv_dnn;opencv_features2d;opencv_flann;opencv_gapi;opencv_highgui;opencv_imgcodecs;opencv_imgproc;opencv_ml;opencv_objdetect;opencv_photo;opencv_stitching;opencv_video;opencv_videoio;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cudaarithm;opencv_cudabgsegm;opencv_cudacodec;opencv_cudafeatures2d;opencv_cudafilters;opencv_cudaimgproc;opencv_cudalegacy;opencv_cudaobjdetect;opencv_cudaoptflow;opencv_cudastereo;opencv_cudawarping;opencv_cudev;opencv_datasets;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_optflow;opencv_phase_unwrapping;opencv_plot;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_superres;opencv_surface_matching;opencv_text;opencv_tracking;opencv_videostab;opencv_wechat_qrcode;opencv_xfeatures2d;opencv_ximgproc;opencv_xobjdetect;opencv_xphoto;opencv_cudaimgproc;cuda
-        DEFINES: ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output"
+        DEFINES: ENABLE_DEBUG_IMAGES;ON;DEBUG_IMAGE_DIR="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output/debug";TEST_OUTPUT_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output";TEST_OUTPUT_ARCHIVE_DIRECTORY="/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output"
         OUTPUT_DIR: 
     
 add_gtest_exec: triangle_detector_cuda_opencv_tests
-        SOURCES: tests/test_logic.cpp;tests/triangle_cuda_opencv_test.cu
+        SOURCES: tests/framework/test_logic.cpp;tests/triangle_cuda_opencv_test.cu
         LIBS_TO_LINK: triangle_detector_cuda_opencv_for_test
-        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
         DEPENDENCIES: 
     
-Directories to clear for target triangle_detector_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output
-Directories to clear for target triangle_detector_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+Directories to clear for target triangle_detector_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output
+Directories to clear for target triangle_detector_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
 add_gtest_exec: utils_cuda_opencv_tests
-        SOURCES: tests/test_logic.cpp;tests/utils_cuda_opencv_test.cu
+        SOURCES: tests/framework/test_logic.cpp;tests/utils_cuda_opencv_test.cu
         LIBS_TO_LINK: triangle_detector_cuda_opencv_for_test
-        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
         DEPENDENCIES: 
     
-Directories to clear for target utils_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output
-Directories to clear for target utils_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+Directories to clear for target utils_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output
+Directories to clear for target utils_cuda_opencv_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
 add_custom_target: triangle_detector_cpp_demo
         TYPE: EXECUTABLE
         SOURCES: demo/demo_cpp.cpp
@@ -139,8 +139,8 @@ Directories to clear for target triangle_detector_cpp_demo: /home/arthur/Desktop
 add_gtest_exec: run_all_tests
         SOURCES: tests/run_all_tests.cpp
         LIBS_TO_LINK: 
-        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+        OUTPUT_DIRS: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output;/home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output
         DEPENDENCIES: triangle_detector_cpp_tests;utils_cpp_tests;triangle_detector_cuda_opencv_tests;utils_cuda_opencv_tests
     
-Directories to clear for target run_all_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/current_output
-Directories to clear for target run_all_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/archive_current_output
+Directories to clear for target run_all_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/current_output
+Directories to clear for target run_all_tests: /home/arthur/Desktop/triangle_detector_cpp.Project/tests/data/archive_current_output

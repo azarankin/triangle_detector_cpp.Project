@@ -1,5 +1,6 @@
 # ---- GTest Executable ----
 include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake) # Log the start of the configuration
+include(${CMAKE_SOURCE_DIR}/cmake/AddPostBuildClearOutput.cmake) # Include post-build clear output function, add_postbuild_clear_output
 function(add_gtest_exec exe_name)
     set(options "")
     set(oneValueArgs "")

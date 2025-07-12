@@ -37,10 +37,12 @@ protected:
     fs::path test_output = current_output / "test_output";
     // Helper function for image similarity check
     void image_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol = 1e-6);
+    void image_similarity_expects(const cv::Mat& expected, const cv::Mat& result, double tol = 1e-6);
     void img_save_the_difference_between_images(const fs::path& diff_img_path, cv::Mat& expected, cv::Mat& result );
     void clear_directory(const fs::path& dir_path); 
     std::string sanitize_filename(const std::string& name);
     void archive_directory(const fs::path& src, const fs::path& archive_dir);
+
     std::string get_current_test_name();
 
     void image_save(const fs::path& path, const cv::Mat& img);
