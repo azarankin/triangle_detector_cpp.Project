@@ -45,7 +45,15 @@ add_custom_target(triangle_detector_pure_cuda
 )
 
 
+# POC Benchmark Code Files
 
+add_custom_target(utils_benchmark
+    TYPE EXECUTABLE
+    SOURCES ${BENCHMARK_DIR}/main.cu ${BENCHMARK_SRC}
+    LINK_LIBS ${BENCHMARK_LINK_LIBS}
+    OUTPUT_DIR "${BENCHMARK_DIR}/out"
+    INCLUDES ${BENCHMARK_DIR}
+)
 
 
 
@@ -67,19 +75,7 @@ if(ENABLE_EXECUTABLES)
     OUTPUT_DIR "${DEMO_CPP_DIR}/out"
     )
 
-    ## POC Benchmark Code Files
-    # add_custom_target(utils_benchmark_poc_logic
-    #     TYPE LIBRARY
-    #     SOURCES ${BENCHMARK_ALL_UTILS_SRC} ${SHARED_UTILS_BENCHMARK_SRC}
-    #     LINK_LIBS ${BENCHMARK_LINK_LIBS}
-    # )
-    # add_custom_target(utils_benchmark
-    #   TYPE EXECUTABLE
-    #   SOURCES ${BENCHMARK_DIR}/main.cu
-    #   LINK_LIBS benchmark_poc_logic
-    #   OUTPUT_DIR "${BENCHMARK_DIR}/out"
-    #   INCLUDES ${BENCHMARK_DIR}
-    # )
+
 endif()
 
 

@@ -29,7 +29,7 @@ protected:
         cv::Mat expected_image = get_gray_filtered_img(expected_path);
         //ASSERT_FALSE(expected_image.empty()) << "Failed to load expected image: " << expected_path;
         //ASSERT_FALSE(result.empty()) << "Result image is empty.";
-        TestLogic::image_similarity_asserts(expected_image, result, tol);
+        TestLogic::image_visual_similarity_asserts(expected_image, result, tol);
     }
 
     cv::Mat get_gray_filtered_img(const std::string& input_gray_img) 
@@ -44,7 +44,7 @@ protected:
 
 TEST_F(CppUtils, CppCompiledUtilsMessage) 
 {
-    ASSERT_EQ(utils_print_message(), "cpp_utils"); 
+    ASSERT_EQ(utils_print_message_cpp_utils(), "cpp_utils"); 
 }
 
 

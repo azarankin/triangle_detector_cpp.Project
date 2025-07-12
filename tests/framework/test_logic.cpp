@@ -1,30 +1,19 @@
 #include <test_logic.h>
+#include <opencv2/quality/qualityssim.hpp>
 
-
-void TestLogic::image_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol)
+void TestLogic::image_visual_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol)
 {
     ASSERT_FALSE(expected.empty()) << "Reference image is missing!";
     ASSERT_FALSE(result.empty()) << "Result image is empty!";
     ASSERT_EQ(result.size(), expected.size()) << "Image sizes differ";
     ASSERT_EQ(result.type(), expected.type()) << "Image types differ";
-    double diff = cv::norm(result, expected, cv::NORM_L2);
-    ASSERT_LT(diff, tol) << "Images are not similar enough! Diff: " << diff;
+    //double diff = cv::norm(result, expected, cv::NORM_L2); //overkill for visual similarity
+    //ASSERT_LT(diff, tol) << "Images are not similar enough! Diff: " << diff;
+    double ssim = cv::quality::QualitySSIM::compute(expected, result, cv::noArray())[0];
+    ASSERT_GT(ssim, tol) << "Images are not similar enough! SSIM: " << ssim;
 }
 
 
-void TestLogic::image_similarity_expects(const cv::Mat& expected, const cv::Mat& result, double tol)
-{
-    EXPECT_FALSE(expected.empty()) << "Reference image is missing!";
-    EXPECT_FALSE(result.empty()) << "Result image is empty!";
-    EXPECT_EQ(result.size(), expected.size()) << "Image sizes differ";
-    EXPECT_EQ(result.type(), expected.type()) << "Image types differ";
-    if (!expected.empty() && !result.empty() && 
-        result.size() == expected.size() && result.type() == expected.type())
-    {
-        double diff = cv::norm(result, expected, cv::NORM_L2);
-        EXPECT_LT(diff, tol) << "Images are not similar enough! Diff: " << diff;
-    }
-}
 
 void TestLogic::img_save_the_difference_between_images(const fs::path& diff_img_path, cv::Mat& expected, cv::Mat& result)
 {

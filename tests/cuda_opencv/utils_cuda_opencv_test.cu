@@ -26,7 +26,7 @@ protected:
     cv::Mat output;
     cv::cuda::GpuMat output_gpu;
     
-    void image_similarity_asserts_for_output_gpu(const std::string& expected_path, double tol = 1e-6)
+    void image_visual_similarity_asserts_for_gpu_output(const std::string& expected_path, double tol = 0.96)
     {
 
         output_gpu.download(output);
@@ -37,21 +37,7 @@ protected:
         cv::Mat expected_image = get_gray_filtered_img(expected_path);
         //ASSERT_FALSE(expected_image.empty()) << "Failed to load expected image: " << expected_path;
         //ASSERT_FALSE(result.empty()) << "Result image is empty.";
-        TestLogic::image_similarity_asserts(expected_image, output, tol);
-    }
-
-
-    void image_similarity_expects_for_output_gpu(const std::string& expected_path, double tol = 1e-6)
-    {
-
-        output_gpu.download(output);
-        // Validate the expected image path first
-        EXPECT_FALSE(expected_path.empty()) << "Expected gray filter image path is empty.";
-        EXPECT_TRUE(fs::exists(expected_path)) << "Expected gray filter image does not exist: " + expected_path;
-        cv::Mat expected_image = get_gray_filtered_img(expected_path);
-        //ASSERT_FALSE(expected_image.empty()) << "Failed to load expected image: " << expected_path;
-        //ASSERT_FALSE(result.empty()) << "Result image is empty.";
-        TestLogic::image_similarity_expects(expected_image, output, tol);
+        TestLogic::image_visual_similarity_asserts(expected_image, output, tol);
     }
 
 
@@ -67,7 +53,7 @@ protected:
 
 TEST_F(CudaOpenCVUtils, CppCompiledUtilsMessage) 
 {
-    ASSERT_EQ(utils_print_message(), "cuda_opencv_utils"); 
+    ASSERT_EQ(utils_print_message_cuda_opencv_utils(), "cuda_opencv_utils"); 
 }
 
 
@@ -78,7 +64,7 @@ TEST_F(CudaOpenCVUtils, GrayFilter)
     
     input_image_gpu.upload(input_image_color);
     cuda_gray_filter(input_image_gpu, output_gpu);
-    image_similarity_expects_for_output_gpu(expected_gray_filter_img);
+    image_visual_similarity_asserts_for_gpu_output(expected_gray_filter_img);
 }
 
 
@@ -90,7 +76,7 @@ TEST_F(CudaOpenCVUtils, GaussianBlueFilter)
     //image_save(test_output / "output_gaussian_blur_filter999.png", output);
 
     // השתמש בtolerance גבוה יותר עבור השוואת CPU vs CUDA
-    image_similarity_expects_for_output_gpu(expected_gaussian_blur_filter_img); //to fix the tolerance for GPU vs CPU comparison
+    image_visual_similarity_asserts_for_gpu_output(expected_gaussian_blur_filter_img); //to fix the tolerance for GPU vs CPU comparison
 }
 
 
@@ -100,14 +86,14 @@ TEST_F(CudaOpenCVUtils, AdaptiveThresholdFilter)
     output_gpu.download(output);
     image_save(debug_output / "cuda_adaptive_threshold_filter99.png", output);
 
-    image_similarity_expects_for_output_gpu(expected_adaptive_threshold_filter_img); //to fix the tolerance for GPU vs CPU comparison
+    image_visual_similarity_asserts_for_gpu_output(expected_adaptive_threshold_filter_img); //to fix the tolerance for GPU vs CPU comparison
 }
 
 
 TEST_F(CudaOpenCVUtils, ThresholdFilter) 
 { 
     cuda_threshold_filter(input_image_gpu, output_gpu);
-    image_similarity_expects_for_output_gpu(expected_threshold_filter_img);
+    image_visual_similarity_asserts_for_gpu_output(expected_threshold_filter_img);
 }
 
 

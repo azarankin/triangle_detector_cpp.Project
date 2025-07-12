@@ -39,7 +39,7 @@ TEST_F(CUDAOpenCVTest, GenerateTriangle) /*cuda finish*/
     cv::Mat expected = cv::imread(this->expected_triangle_img, cv::IMREAD_COLOR);
     cv::Mat result = cv::imread(new_triangle_img, cv::IMREAD_COLOR);
     //img_save_the_difference_between_images(current_output / "diff.png", expected, result);
-    image_similarity_asserts(expected, result);
+    image_visual_similarity_asserts(expected, result);
 }
 
 
@@ -52,7 +52,7 @@ TEST_F(CUDAOpenCVTest, DetectTriangleContour)
     cv::Mat triangle_image = cv::imread(triangle_img, cv::IMREAD_COLOR);
     auto result = draw_contour_on_image(triangle_image, template_contour);
     cv::Mat expected = cv::imread(expected_triangle_contours_img, cv::IMREAD_COLOR);
-    image_similarity_asserts(expected, result);
+    image_visual_similarity_asserts(expected, result);
 }
 
 TEST_F(CUDAOpenCVTest, DetectTriangleContourOnAnother) 
@@ -63,7 +63,7 @@ TEST_F(CUDAOpenCVTest, DetectTriangleContourOnAnother)
     auto result = draw_contour_on_image(other_triangle_image, detected_contours);
     cv::Mat expected = cv::imread(expected_other_triangle_contours_img, cv::IMREAD_COLOR);
 
-    image_similarity_asserts(expected, result);
+    image_visual_similarity_asserts(expected, result);
 }
 
 

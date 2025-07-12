@@ -33,7 +33,7 @@ TEST_F(CppTest, GenerateTriangle)
     create_triangle_image(new_triangle_img);
     cv::Mat expected = cv::imread(this->expected_triangle_img, cv::IMREAD_COLOR);
     cv::Mat result = cv::imread(new_triangle_img, cv::IMREAD_COLOR);
-    image_similarity_asserts(expected, result);
+    image_visual_similarity_asserts(expected, result);
 }
 
 TEST_F(CppTest, DetectTriangleContour) 
@@ -44,7 +44,7 @@ TEST_F(CppTest, DetectTriangleContour)
     cv::Mat expected = cv::imread(expected_triangle_contours_img, cv::IMREAD_COLOR);
     //img_save_the_difference_between_images(current_output / "diff.png", expected, result);
     image_save(debug_output / "triangle_contours.png", result);
-    image_similarity_asserts(expected, result);
+    image_visual_similarity_asserts(expected, result);
 }
 
 TEST_F(CppTest, DetectTriangleContourOnAnother) 
@@ -55,7 +55,7 @@ TEST_F(CppTest, DetectTriangleContourOnAnother)
     auto result = draw_contour_on_image(other_triangle_image, detected_contours);
     cv::Mat expected = cv::imread(expected_other_triangle_contours_img, cv::IMREAD_COLOR);
     image_save(debug_output / "other_triangle_contours.png", result);
-    image_similarity_asserts(expected, result);
+    image_visual_similarity_asserts(expected, result);
 }
 
 

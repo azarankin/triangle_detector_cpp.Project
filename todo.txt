@@ -44,3 +44,4 @@ CMakeLists.txt Projects seperation
 fix test_logic.h paths
 set  AddCustomTarget.cmake AddGTestExec.cmake with PUBLIC and PRIVATE libraries
 Benchmark with RAM/VRAM + accuracy
+set benchmark with the same looking images but noisy  // amoust same images // different images

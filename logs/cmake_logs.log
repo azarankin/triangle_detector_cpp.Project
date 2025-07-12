@@ -1,5 +1,5 @@
 === CMake Build Log ===
-Compiling: 2025-07-12 22:40:30
+Compiling: 2025-07-12 23:52:57
 =======================
 
 ---- CMake Configuration ----
@@ -76,6 +76,16 @@ add_custom_target: triangle_detector_pure_cuda
         DEFINES: 
         OUTPUT_DIR: 
     
+add_custom_target: utils_benchmark
+        TYPE: EXECUTABLE
+        SOURCES: /home/arthur/Desktop/triangle_detector_cpp.Project/benchmarks/main.cu;/home/arthur/Desktop/triangle_detector_cpp.Project/benchmarks/utils.cu;/home/arthur/Desktop/triangle_detector_cpp.Project/src/cpp/utils_cpp.cpp;/home/arthur/Desktop/triangle_detector_cpp.Project/src/cuda_opencv/utils_cuda_opencv.cu;/home/arthur/Desktop/triangle_detector_cpp.Project/src/shared/shared_utils.cpp;/home/arthur/Desktop/triangle_detector_cpp.Project/src/shared/shared_utils.cu
+        LIBRARY_TYPE: 
+        INCLUDES: /home/arthur/Desktop/triangle_detector_cpp.Project/benchmarks
+        LINK_LIBS: opencv_calib3d;opencv_core;opencv_dnn;opencv_features2d;opencv_flann;opencv_gapi;opencv_highgui;opencv_imgcodecs;opencv_imgproc;opencv_ml;opencv_objdetect;opencv_photo;opencv_stitching;opencv_video;opencv_videoio;opencv_aruco;opencv_bgsegm;opencv_bioinspired;opencv_ccalib;opencv_cudaarithm;opencv_cudabgsegm;opencv_cudacodec;opencv_cudafeatures2d;opencv_cudafilters;opencv_cudaimgproc;opencv_cudalegacy;opencv_cudaobjdetect;opencv_cudaoptflow;opencv_cudastereo;opencv_cudawarping;opencv_cudev;opencv_datasets;opencv_dnn_objdetect;opencv_dnn_superres;opencv_dpm;opencv_face;opencv_freetype;opencv_fuzzy;opencv_hfs;opencv_img_hash;opencv_intensity_transform;opencv_line_descriptor;opencv_mcc;opencv_optflow;opencv_phase_unwrapping;opencv_plot;opencv_quality;opencv_rapid;opencv_reg;opencv_rgbd;opencv_saliency;opencv_shape;opencv_signal;opencv_stereo;opencv_structured_light;opencv_superres;opencv_surface_matching;opencv_text;opencv_tracking;opencv_videostab;opencv_wechat_qrcode;opencv_xfeatures2d;opencv_ximgproc;opencv_xobjdetect;opencv_xphoto;opencv_cudaimgproc;cuda
+        DEFINES: 
+        OUTPUT_DIR: /home/arthur/Desktop/triangle_detector_cpp.Project/benchmarks/out
+    
+Directories to clear for target utils_benchmark: /home/arthur/Desktop/triangle_detector_cpp.Project/benchmarks/out
 add_custom_target: triangle_detector_pure_cuda_for_test
         TYPE: LIBRARY
         SOURCES: /home/arthur/Desktop/triangle_detector_cpp.Project/src/pure_cuda/shape_detector_pure_cuda.cu;/home/arthur/Desktop/triangle_detector_cpp.Project/src/pure_cuda/utils_pure_cuda.cu;/home/arthur/Desktop/triangle_detector_cpp.Project/src/shared/shared_utils.cpp;/home/arthur/Desktop/triangle_detector_cpp.Project/src/shared/shared_utils.cu;/home/arthur/Desktop/triangle_detector_cpp.Project/src/debug.cpp;/home/arthur/Desktop/triangle_detector_cpp.Project/src/debug.cu

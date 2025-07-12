@@ -121,7 +121,8 @@ set(SHARED_UTILS_BENCHMARK_SRC ${SHARED_UTILS_CUDA_OPENCV_SRC})
 set(UTILS_CPP_SRC ${SRC_CPP_DIR}/utils_cpp.cpp)
 set(UTILS_CUDA_OPENCV_SRC ${SRC_CUDA_OPENCV_DIR}/utils_cuda_opencv.cu)
 set(UTILS_PURE_CUDA_SRC ${SRC_PURE_CUDA_DIR}/utils_pure_cuda.cu)
-set(BENCHMARK_ALL_UTILS_SRC ${UTILS_CPP_SRC} ${UTILS_CUDA_OPENCV_SRC} ${UTILS_PURE_CUDA_SRC})
+set(BENCHMARK_ALL_UTILS_SRC ${UTILS_CPP_SRC} ${UTILS_CUDA_OPENCV_SRC})  # ${UTILS_PURE_CUDA_SRC}`
+
 
 # ---- Projects Compilation Sources ----
 ## C++ Code Files
@@ -131,7 +132,7 @@ set(CUDA_OPENCV_SRC ${SRC_CUDA_OPENCV_DIR}/shape_detector_cuda_opencv.cu ${UTILS
 ## PURE CUDA Code Files
 set(PURE_CUDA_SRC ${SRC_PURE_CUDA_DIR}/shape_detector_pure_cuda.cu ${UTILS_PURE_CUDA_SRC} ${SHARED_UTILS_PURE_CUDA_SRC})
 
-
+set(BENCHMARK_SRC ${BENCHMARK_DIR}/utils.cu ${BENCHMARK_ALL_UTILS_SRC} ${SHARED_UTILS_BENCHMARK_SRC}) #
 
 
 # ---- Executables ----

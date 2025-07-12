@@ -7,7 +7,7 @@
 
 
 
-std::string utils_print_message() 
+std::string utils_print_message_pure_cuda() 
 {
     std::cout << "\t\t\t\t\t\t\tPrinting from CUDA OpenCV Utils library!" << std::endl;
     return "pure_cuda_utils";

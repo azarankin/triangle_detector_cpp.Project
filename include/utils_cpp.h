@@ -3,7 +3,7 @@
 #include <debug.h>
 
 
-std::string utils_print_message();
+std::string utils_print_message_cpp_utils();
 
 
 void gray_filter(const cv::Mat& src, cv::Mat& dst);

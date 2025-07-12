@@ -3,7 +3,7 @@
 
 
 
-std::string utils_print_message() 
+std::string utils_print_message_cpp_utils() 
 {
     std::cout << "\t\t\t\t\t\t\tPrinting from C++ Utils library!" << std::endl;
     return "cpp_utils";
