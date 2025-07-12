@@ -1,4 +1,4 @@
-#include "test_logic.h"
+#include <test_logic.h>
 
 
 void TestLogic::image_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol)

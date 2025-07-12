@@ -1,14 +1,3 @@
-
-# ---- CMake Configuration ----
-set(CMAKE_MINIMUM_REQUIRED_VERSION 3.19)
-cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
-
-# ---- Project Configuration ----
-set(PROJECT_NAME triangle_detector_cpp)
-set(PROJECT_VERSION 1.0.0)
-set(PROJECT_LANGUAGES CXX CUDA)
-project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
-
 # ---- Global Configuration ----
 #set(CMAKE_BUILD_TYPE #)
 enable_language(CUDA)
@@ -34,34 +23,64 @@ enable_testing()
 include(GoogleTest)
 
 
-## Log the start of the configuration
-include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
-reset_log_file()
-#reset_error_file()
 
-
+# ---- Projects Directions ----
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(SRC_CPP_DIR ${CMAKE_SOURCE_DIR}/src/cpp)
+set(SRC_CUDA_OPENCV_DIR ${CMAKE_SOURCE_DIR}/src/cuda_opencv)
+set(SRC_SHARED_DIR ${CMAKE_SOURCE_DIR}/src/shared)
+set(LOGS_DIR ${CMAKE_SOURCE_DIR}/logs)
+set(TESTS_DIR ${CMAKE_SOURCE_DIR}/tests)
+set(TESTS_CPP_DIR ${CMAKE_SOURCE_DIR}/tests/cpp)
+set(TESTS_CUDA_OPENCV_DIR ${CMAKE_SOURCE_DIR}/tests/cuda_opencv)
+set(TESTS_FRAMEWORK_DIR ${CMAKE_SOURCE_DIR}/tests/framework)
+set(TESTS_DATA_DIR ${CMAKE_SOURCE_DIR}/tests/data)
+set(CMAKE_DIR ${CMAKE_SOURCE_DIR}/cmake)
+set(DEMO_DIR ${CMAKE_SOURCE_DIR}/demo)
+set(DEMO_CPP_DIR ${DEMO_DIR})
 
 # ---- Project Configuration ----
 ## Set Logic Source for Tests
-set(TEST_LOGIC_SRC tests/framework/test_logic.cpp)
+set(TEST_LOGIC_SRC ${TESTS_FRAMEWORK_DIR}/test_logic.cpp)
+## Set Test Includes
+set(TEST_INCLUDES ${TESTS_FRAMEWORK_DIR})
 ## Test output paths
-set(TEST_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/data/current_output")
-set(TEST_OUTPUT_ARCHIVE_DIRECTORY "${CMAKE_SOURCE_DIR}/tests/data/archive_current_output")
-set(CPU_TEST_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
-set(CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
-set(ALL_TESTS_OUTPUT_DIRECTORIES ${TEST_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY}) ## additional output directory list
+set(TEST_OUTPUT_DIRECTORY "${TESTS_DATA_DIR}/current_output")
+set(TEST_DEBUG_OUTPUT_DIRECTORY "${TEST_OUTPUT_DIRECTORY}/test_debug_output")
+set(TEST_OUTPUT_ARCHIVE_DIRECTORY "${TESTS_DATA_DIR}/archive_current_output")
+
+# ---- Tests Output Directories ----
+## Set output directories for tests
+## The output directories are used for tests results, debug images, and archive of current output
+## The output directories will move to archive after each run of tests
+## This directories will be cleared for each build
+set(ALL_TESTS_OUTPUT_DIRECTORIS ${TEST_OUTPUT_DIRECTORY} ${TEST_DEBUG_OUTPUT_DIRECTORY} ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
+set(CPU_TEST_OUTPUT_DIRECTORIES ${ALL_TESTS_OUTPUT_DIRECTORIS})
+set(CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES ${ALL_TESTS_OUTPUT_DIRECTORIS})
+set(ALL_TESTS_OUTPUT_DIRECTORIES ${ALL_TESTS_OUTPUT_DIRECTORIS}) ## additional output directory list
+
+## Test reference paths
+set(TEST_REFERENCE_INPUT_DIRECTORY "${TESTS_DATA_DIR}/reference_input")
+set(TEST_REFERENCE_OUTPUT_DIRECTORY "${TESTS_DATA_DIR}/reference_output")
+
 
 ## Debug Targets
 set(DEBUG_DEFINES
     ENABLE_DEBUG_IMAGES ON
     DEBUG_IMAGE_DIR="${TEST_OUTPUT_DIRECTORY}/debug"
     TEST_OUTPUT_DIRECTORY="${TEST_OUTPUT_DIRECTORY}"
+    TEST_DEBUG_OUTPUT_DIRECTORY="${TEST_DEBUG_OUTPUT_DIRECTORY}"
     TEST_OUTPUT_ARCHIVE_DIRECTORY="${TEST_OUTPUT_ARCHIVE_DIRECTORY}"
+    TEST_REFERENCE_INPUT_DIRECTORY="${TEST_REFERENCE_INPUT_DIRECTORY}"
+    TEST_REFERENCE_OUTPUT_DIRECTORY="${TEST_REFERENCE_OUTPUT_DIRECTORY}"
 )
-set(CPU_DEBUG_SRC src/debug.cpp)
+
+set(CPU_DEBUG_SRC ${SRC_DIR}/debug.cpp)
 set(DEBUG_DEFINES_CPU ${DEBUG_DEFINES})
+
+set(CUDA_OPENCV_DEBUG_SRC ${SRC_DIR}/debug.cpp ${SRC_DIR}/debug.cu)
 set(DEBUG_DEFINES_CUDA_OPENCV ${DEBUG_DEFINES})
-set(CUDA_OPENCV_DEBUG_SRC src/debug.cpp src/debug.cu)
+
 
 # ---- Projects Compilation ----
 #set(CPU_INCLUDE ${CMAKE_SOURCE_DIR}/include) ## set as include_directories(${CMAKE_SOURCE_DIR}/include) for all global includes
@@ -70,27 +89,28 @@ set(CPU_LINK_LIBS ${OpenCV_LIBS})
 set(CUDA_OPENCV_LINK_LIBS ${OpenCV_LIBS} opencv_cudaimgproc cuda)
 
 # ---- Projects Logs Settings ----
-set(LOG_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake_logs.log" CACHE INTERNAL "")
-set(ERROR_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake_errors.log" CACHE INTERNAL "")
+set(LOG_FILE_PATH "${LOGS_DIR}/cmake_logs.log" CACHE INTERNAL "")
+set(ERROR_FILE_PATH "${LOGS_DIR}/cmake_errors.log" CACHE INTERNAL "")
 
 
 
 # ---- Projects Compilation ----
 ## C++ Code Files
-set(CPU_SRC src/cpp/shape_detector_cpp.cpp src/shared/shared_utils.cpp src/cpp/utils_cpp.cpp)
+set(CPU_SRC ${SRC_CPP_DIR}/shape_detector_cpp.cpp ${SRC_SHARED_DIR}/shared_utils.cpp ${SRC_CPP_DIR}/utils_cpp.cpp)
 ## CUDA OpenCV Code Files
-set(CUDA_OPENCV_SRC src/cuda_opencv/shape_detector_cuda_opencv.cu src/shared/shared_utils.cpp src/shared/shared_utils.cu src/cuda_opencv/utils_cuda_opencv.cu)
-
-
+set(CUDA_OPENCV_SRC ${SRC_CUDA_OPENCV_DIR}/shape_detector_cuda_opencv.cu ${SRC_SHARED_DIR}/shared_utils.cpp ${SRC_SHARED_DIR}/shared_utils.cu ${SRC_CUDA_OPENCV_DIR}/utils_cuda_opencv.cu)
+##
+set(APP_LOGIC_SRC ${SRC_SHARED_DIR}/shape_detector_logic.cpp)
+set(APP_LOGIC_INCLUDES ${SRC_SHARED_DIR})
 
 ## Log the start of the configuration
-include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
+include(${CMAKE_DIR}/AddLogMessage.cmake)
 reset_log_file()
 #reset_error_file()
 
 
 # ---- Projects Confinguration Log print ----
-include(${CMAKE_SOURCE_DIR}/cmake/Logs_ProjectConfig.cmake)
+include(${CMAKE_DIR}/Logs_ProjectConfig.cmake)
 
 
 

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "test_logic.h" // #include <gtest/gtest.h> #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
+#include <test_logic.h>  // #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
 // the functions
 #include <shape_detector_common.h>
 
@@ -43,7 +43,7 @@ TEST_F(CppTest, DetectTriangleContour)
     auto result = draw_contour_on_image(triangle_image, template_contour);
     cv::Mat expected = cv::imread(expected_triangle_contours_img, cv::IMREAD_COLOR);
     //img_save_the_difference_between_images(current_output / "diff.png", expected, result);
-    image_save(test_output / "triangle_contours.png", result);
+    image_save(debug_output / "triangle_contours.png", result);
     image_similarity_asserts(expected, result);
 }
 
@@ -54,7 +54,7 @@ TEST_F(CppTest, DetectTriangleContourOnAnother)
     auto detected_contours = contour_compare(other_triangle_image, template_contour);
     auto result = draw_contour_on_image(other_triangle_image, detected_contours);
     cv::Mat expected = cv::imread(expected_other_triangle_contours_img, cv::IMREAD_COLOR);
-    image_save(test_output / "other_triangle_contours.png", result);
+    image_save(debug_output / "other_triangle_contours.png", result);
     image_similarity_asserts(expected, result);
 }
 

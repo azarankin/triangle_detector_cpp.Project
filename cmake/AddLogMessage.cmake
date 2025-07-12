@@ -18,9 +18,10 @@ function(log_message msg)
 endfunction()
 
 function(error_message msg)
-    if(${file_path} MATCHES "log" OR ${file_path} MATCHES "${CMAKE_SOURCE_DIR}")
+    if("${ERROR_FILE_PATH}" MATCHES "log" OR "${ERROR_FILE_PATH}" MATCHES "${CMAKE_SOURCE_DIR}")
         message(FATAL_ERROR "${msg}")
     endif()
+
     file_writing_check(${ERROR_FILE_PATH})
     message(FATAL_ERROR "${msg}")
     file(APPEND ${ERROR_FILE_PATH} "${NOW_TIMESTAMP} -- ${msg}\n")

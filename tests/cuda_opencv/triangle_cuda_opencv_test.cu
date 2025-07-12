@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "test_logic.h" // #include <gtest/gtest.h> #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
+#include <test_logic.h> // #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
 
 // the flag ENABLE_DEBUG_SAVE is defined (in CMakeLists.txt file)
 #include <shape_detector_common.h>

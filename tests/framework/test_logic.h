@@ -5,19 +5,35 @@
 #include <string>
 
 
-
-#ifndef TEST_OUTPUT_DIRECTORY
     //definition error check
-    //#error "TEST_OUTPUT_DIRECTORY is not defined! Please define it in your CMakeLists.txt."
+#ifndef TEST_OUTPUT_DIRECTORY
     #define TEST_OUTPUT_DIRECTORY ""
+    #error "TEST_OUTPUT_DIRECTORY is not defined! Please define it in your CMakeLists.txt."
 #endif
 #ifndef TEST_OUTPUT_ARCHIVE_DIRECTORY
     #define TEST_OUTPUT_ARCHIVE_DIRECTORY ""
+    #error "TEST_OUTPUT_ARCHIVE_DIRECTORY is not defined! Please define it in your CMakeLists.txt."
+#endif
+#ifndef TEST_REFERENCE_INPUT_DIRECTORY
+    #define TEST_REFERENCE_INPUT_DIRECTORY ""
+    #error "TEST_OUTPUT_ARCHIVE_DIRECTORY is not defined! Please define it in your CMakeLists.txt."
+#endif
+#ifndef TEST_REFERENCE_OUTPUT_DIRECTORY
+    #define TEST_REFERENCE_OUTPUT_DIRECTORY ""
+    #error "TEST_OUTPUT_ARCHIVE_DIRECTORY is not defined! Please define it in your CMakeLists.txt."
+#endif
+#ifndef TEST_DEBUG_OUTPUT_DIRECTORY
+    #define TEST_DEBUG_OUTPUT_DIRECTORY ""
+    #error "TEST_DEBUG_OUTPUT_DIRECTORY is not defined! Please define it in your CMakeLists.txt."
 #endif
 
-#pragma message("CMake: TEST_OUTPUT_DIRECTORY=" TEST_OUTPUT_DIRECTORY)
-#pragma message("CMake: TEST_OUTPUT_ARCHIVE_DIRECTORY=" TEST_OUTPUT_ARCHIVE_DIRECTORY)
 
+
+#pragma message("CMake: TEST_OUTPUT_DIRECTORY=" TEST_OUTPUT_DIRECTORY)
+#pragma message("CMake: TEST_DEBUG_OUTPUT_DIRECTORY=" TEST_DEBUG_OUTPUT_DIRECTORY)
+#pragma message("CMake: TEST_OUTPUT_ARCHIVE_DIRECTORY=" TEST_OUTPUT_ARCHIVE_DIRECTORY)
+#pragma message("CMake: TEST_REFERENCE_INPUT_DIRECTORY=" TEST_REFERENCE_INPUT_DIRECTORY)
+#pragma message("CMake: TEST_REFERENCE_OUTPUT_DIRECTORY=" TEST_REFERENCE_OUTPUT_DIRECTORY)
 
 
 namespace fs = std::filesystem;
@@ -25,16 +41,24 @@ namespace fs = std::filesystem;
 class TestLogic : public ::testing::Test 
 {
 protected:
-    fs::path dir = fs::path(__FILE__).parent_path();
-    fs::path reference_input = dir / "reference_input";
-    fs::path reference_output = dir / "reference_output";
-    fs::path current_output = std::string(TEST_OUTPUT_DIRECTORY).empty()
-        ? dir / "current_output"
-        : fs::path(TEST_OUTPUT_DIRECTORY);
-    fs::path archive_current_output = std::string(TEST_OUTPUT_ARCHIVE_DIRECTORY).empty()
-        ? dir / "archive_current_output"
-        : fs::path(TEST_OUTPUT_ARCHIVE_DIRECTORY);
-    fs::path test_output = current_output / "test_output";
+    fs::path dir = fs::path(__FILE__).parent_path().parent_path() / "data"; // Assuming the data directory is two levels up from the current file
+    fs::path reference_input = !std::string(TEST_REFERENCE_INPUT_DIRECTORY).empty()
+        ? fs::path(TEST_REFERENCE_INPUT_DIRECTORY)
+        : dir / "reference_input";
+    fs::path debug_output = !std::string(TEST_DEBUG_OUTPUT_DIRECTORY).empty()
+        ? fs::path(TEST_DEBUG_OUTPUT_DIRECTORY)
+        : current_output / "test_debug_output";
+    fs::path reference_output = !std::string(TEST_REFERENCE_OUTPUT_DIRECTORY).empty()
+        ? fs::path(TEST_REFERENCE_OUTPUT_DIRECTORY)
+        : dir / "reference_output";
+    fs::path current_output = !std::string(TEST_OUTPUT_DIRECTORY).empty()
+        ? fs::path(TEST_OUTPUT_DIRECTORY)
+        : dir / "current_output";
+    fs::path archive_current_output = !std::string(TEST_OUTPUT_ARCHIVE_DIRECTORY).empty()
+        ? fs::path(TEST_OUTPUT_ARCHIVE_DIRECTORY)
+        : dir / "archive_current_output";  
+        
+
     // Helper function for image similarity check
     void image_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol = 1e-6);
     void image_similarity_expects(const cv::Mat& expected, const cv::Mat& result, double tol = 1e-6);
@@ -50,18 +74,20 @@ protected:
 
 };
 
+
 class UtilsTest : public TestLogic
 {
 protected:
     fs::path original_img = reference_input / "utils_original_image.png";
     fs::path input_gray_img = reference_input / "utils_gray_filter.png";
-    fs::path expected_gray_filter_img = reference_output / "utils_gray_filter.png";;
+    fs::path expected_gray_filter_img = reference_output / "utils_gray_filter.png";
     fs::path expected_gaussian_blur_filter_img = reference_output / "utils_gaussian_blur_filter.png";
     fs::path expected_adaptive_threshold_filter_img = reference_output / "utils_adaptive_threshold_filter.png";
     fs::path expected_threshold_filter_img = reference_output / "utils_threshold_filter.png";
     
     // Add test-specific members here if needed
 };
+
 
 class TriangleImageTest : public TestLogic
 {

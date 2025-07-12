@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "test_logic.h" // #include <gtest/gtest.h> #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
+#include <test_logic.h>  // #include <gtest/gtest.h> #include <opencv2/opencv.hpp> #include <filesystem> #include <string>
 // the test functions
 #include <utils_cuda_opencv.cuh>
 
@@ -78,7 +78,7 @@ TEST_F(CudaOpenCVUtils, GrayFilter)
     
     input_image_gpu.upload(input_image_color);
     cuda_gray_filter(input_image_gpu, output_gpu);
-    image_similarity_asserts_for_output_gpu(expected_gray_filter_img);
+    image_similarity_expects_for_output_gpu(expected_gray_filter_img);
 }
 
 
@@ -98,7 +98,7 @@ TEST_F(CudaOpenCVUtils, AdaptiveThresholdFilter)
 { 
     cuda_adaptive_threshold_filter(input_image_gpu, output_gpu);
     output_gpu.download(output);
-    image_save(test_output / "cuda_adaptive_threshold_filter99.png", output);
+    image_save(debug_output / "cuda_adaptive_threshold_filter99.png", output);
 
     image_similarity_expects_for_output_gpu(expected_adaptive_threshold_filter_img); //to fix the tolerance for GPU vs CPU comparison
 }
@@ -107,7 +107,7 @@ TEST_F(CudaOpenCVUtils, AdaptiveThresholdFilter)
 TEST_F(CudaOpenCVUtils, ThresholdFilter) 
 { 
     cuda_threshold_filter(input_image_gpu, output_gpu);
-    image_similarity_asserts_for_output_gpu(expected_threshold_filter_img);
+    image_similarity_expects_for_output_gpu(expected_threshold_filter_img);
 }
 
 
