@@ -11,12 +11,27 @@
 #include <numeric>
 
 // Console coloring
-#define RESET   "\033[0m"
+#define BLACK   "\033[30m"
 #define RED     "\033[31m"
 #define GREEN   "\033[32m"
 #define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
 #define CYAN    "\033[36m"
+#define WHITE   "\033[37m"
+#define RESET   "\033[0m"
 #define BOLD    "\033[1m"
+#define UNDERLINE "\033[4m"
+#define REVERSED "\033[7m"
+#define BG_BLACK   "\033[40m"
+#define BG_RED     "\033[41m"
+#define BG_GREEN   "\033[42m"
+#define BG_YELLOW  "\033[43m"
+#define BG_BLUE    "\033[44m"
+#define BG_MAGENTA "\033[45m"
+#define BG_CYAN    "\033[46m"
+#define BG_WHITE   "\033[47m"
+
 
 namespace fs = std::filesystem;
 
@@ -32,6 +47,7 @@ struct ImageData
 
 struct DiffStats 
 {
+    
     double mean_diff = 0.0;
     double max_diff = 0.0;
     cv::Point max_diff_location;
@@ -48,7 +64,7 @@ struct DiffStats
     bool is_different_dimentions = false;
     bool is_different_types = false;
     double mean_time_taked = 0.0;
-    int proffiler_runned = 0; //number of runnings
+    int proffiler_runs = 0; //number of runnings
 };
 
 // ---------- Benchmark function ----------
@@ -81,7 +97,7 @@ void profile_and_update_stats(
 {
     cv::Mat output;
     stats.mean_time_taked = profile_function(fn, input, output, runs);
-    stats.proffiler_runned = runs;
+    stats.proffiler_runs = runs;
 }
 
 // ---------- Diff logic ----------
@@ -121,8 +137,13 @@ DiffStats compute_image_difference(const cv::Mat& img1, const cv::Mat& img2)
     return stats;
 }
 
+
+void title_print(const std::string& title, const std::string& banchmark_on ="") 
+{
+    std::cout << BOLD << YELLOW << "\n=== Benchmark: " << UNDERLINE <<  title << RESET << ": " << BOLD << YELLOW  << banchmark_on << RESET << BOLD << YELLOW << " === " << RESET << std::endl;
+}   
 // ---------- Colorful print ----------
-void print_diff_stats(const DiffStats& stats, const std::string& test_name) 
+void print_diff_stats(const DiffStats& stats, const std::string& test_name, const std::string& function_name = "") 
 {
     bool good_ssim = stats.ssim >= 0.92;
     bool good_psnr = stats.psnr > 30.0;
@@ -133,7 +154,9 @@ void print_diff_stats(const DiffStats& stats, const std::string& test_name)
     std::string diff_col = few_diff_pixels ? GREEN : YELLOW;
     std::string icon = good_ssim ? "✔️" : (stats.ssim > 0.80 ? "⚠️" : "❌");
 
-    std::cout << CYAN << "\n=== " << test_name << " Difference Analysis ===" << RESET << std::endl;
+    std::cout << BLUE << "\n=== " << UNDERLINE << test_name << RESET << BLUE << " Difference Analysis ===" << RESET << std::endl;
+    if(!function_name.empty())
+        std::cout << BOLD << CYAN << "= " << UNDERLINE << function_name << RESET << BOLD << CYAN  << " :" << RESET << std::endl;
     std::cout << "Image Size: " << stats.width << " x " << stats.height << std::endl;
     std::cout << "Mean difference per pixel: " << stats.mean_diff << std::endl;
     std::cout << "Max difference per pixel: " << stats.max_diff << std::endl;
@@ -144,13 +167,21 @@ void print_diff_stats(const DiffStats& stats, const std::string& test_name)
     std::cout << "Norm: " << stats.norm_l2  << std::endl;
     std::cout << psnr_col << "PSNR: " << stats.psnr << RESET << std::endl;
     std::cout << ssim_col << "SSIM: " << stats.ssim << " " << icon << RESET << std::endl;
-    std::cout << BOLD << CYAN << "⏱️ Mean Time (" << stats.proffiler_runned << " runs): " 
-              << std::setprecision(3) << stats.mean_time_taked << " ms" << RESET << std::endl;
-    std::cout << CYAN << "=============================================\n" << RESET << std::endl;
+    if(stats.proffiler_runs > 0)
+    {
+        std::cout << BOLD << CYAN << "⏱️ Mean Time (" << stats.proffiler_runs << " runs): " 
+                  << std::setprecision(3) << stats.mean_time_taked << " ms" << RESET << std::endl;
+    }
+    else
+    {
+        std::cout << BOLD << BLUE << "⏱️ Mean Time: Not profiled" << RESET << std::endl;
+    }
+    std::cout << BLUE << "=============================================\n" << RESET << std::endl;
+    std::cout << std::endl;
 }
 
 // ---------- Save colorful diff to file (no ansi, but with icons and pretty layout) ----------
-void save_diff_stats_to_file(const DiffStats& stats, const std::string& test_name, const std::string& filename)
+void save_diff_stats_to_file(const DiffStats& stats, const std::string& test_name, const std::string& filename, const std::string& function_name = "")
 {
     std::ofstream out(filename, std::ios_base::app);
     bool good_ssim = stats.ssim >= 0.92;
@@ -159,6 +190,8 @@ void save_diff_stats_to_file(const DiffStats& stats, const std::string& test_nam
     std::string icon = good_ssim ? "✔️" : (stats.ssim > 0.80 ? "⚠️" : "❌");
 
     out << "\n=== " << test_name << " Difference Analysis ===\n";
+    if(!function_name.empty())
+        out << "= " << function_name << " : =\n";
     out << "Image Size: " << stats.width << " x " << stats.height << "\n";
     out << "Mean difference per pixel: " << stats.mean_diff << "\n";
     out << "Max difference per pixel: " << stats.max_diff << "\n";
@@ -169,8 +202,15 @@ void save_diff_stats_to_file(const DiffStats& stats, const std::string& test_nam
     out << "Norm: " << stats.norm_l2  << "\n";
     out << "PSNR: " << stats.psnr << "\n";
     out << "SSIM: " << stats.ssim << " " << icon << "\n";
-    out << "⏱️ Mean Time (" << stats.proffiler_runned << " runs): " 
-        << std::setprecision(3) << stats.mean_time_taked << " ms\n";
+    if(stats.proffiler_runs > 0)
+    {
+        out << "⏱️ Mean Time (" << stats.proffiler_runs << " runs): " 
+            << std::setprecision(3) << stats.mean_time_taked << " ms\n";
+    }
+    else
+    {
+        out << "⏱️ Mean Time: Not profiled\n";
+    }
     out << "=============================================\n" << std::endl;
     out.close();
 }
@@ -206,6 +246,6 @@ void save_diff_stats_to_file2(const DiffStats& stats, const std::string& label, 
         << stats.psnr << ","
         << stats.ssim << ","
         << stats.mean_time_taked << ","
-        << stats.proffiler_runned << std::endl;
+        << stats.proffiler_runs << std::endl;
     out.close();
 }

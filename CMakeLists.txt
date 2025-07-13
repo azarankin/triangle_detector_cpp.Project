@@ -37,12 +37,12 @@ add_custom_target(triangle_detector_cuda_opencv
 )
 
 
-## CUDA Code Files
-add_custom_target(triangle_detector_pure_cuda
-    TYPE LIBRARY
-    SOURCES ${PURE_CUDA_SRC}
-    LINK_LIBS ${PURE_CUDA_LINK_LIBS}
-)
+# ## CUDA Code Files
+# add_custom_target(triangle_detector_pure_cuda
+#     TYPE LIBRARY
+#     SOURCES ${PURE_CUDA_SRC}
+#     LINK_LIBS ${PURE_CUDA_LINK_LIBS}
+# )
 
 
 # POC Benchmark Code Files

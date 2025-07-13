@@ -1,0 +1,12 @@
+קוד לדוגמה – בדיקת batch מרבי
+cpp
+Copy
+Edit
+size_t free_mem, total_mem;
+cudaMemGetInfo(&free_mem, &total_mem);
+
+size_t img_bytes = width * height * channels * sizeof(unsigned char);
+size_t safe_mem = (size_t)(free_mem * 0.8); // 80% מהזיכרון
+int max_batch = safe_mem / img_bytes;
+
+std::cout << "Maximum batch: " << max_batch << " images" << std::endl

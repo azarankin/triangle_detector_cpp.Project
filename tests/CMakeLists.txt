@@ -3,7 +3,7 @@
 option(ENABLE_ALL_TESTS_COMPILATION "..." OFF)
 option(ENABLE_CPP_TESTS "..." OFF)
 option(ENABLE_CUDA_OPENCV_TESTS "..." OFF)
-option(ENABLE_PURE_CUDA_TESTS "..." ON)
+option(ENABLE_PURE_CUDA_TESTS "..." OFF)
 
 
 

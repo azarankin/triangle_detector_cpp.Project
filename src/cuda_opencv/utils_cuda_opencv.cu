@@ -11,8 +11,27 @@ std::string utils_print_message_cuda_opencv_utils()
 }
 
 
+
+void cuda_gray_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
+{
+    cv::cuda::cvtColor(src, dst, cv::COLOR_BGR2GRAY);
+    SAVE_DEBUG_IMAGE(dst);
+}
+
+
+
+void cuda_gaussian_blur_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
+{
+    auto gauss_filter = cv::cuda::createGaussianFilter(src.type(), src.type(), cv::Size(5, 5), 0);
+    gauss_filter->apply(src, dst);
+    SAVE_DEBUG_IMAGE(dst);
+}
+
+
+
+
 // תחליף את adaptiveThreshold על CPU בלוגיקה CUDA הזו:
-void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst, int blockSize, double C) 
+static void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst, int blockSize, double C) 
 {
     // (1) ממוצע לוקאלי – boxFilter CUDA
     cv::cuda::GpuMat mean_local;
@@ -26,21 +45,6 @@ void cuda_adaptive_threshold(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst,
     // (3) משווים: src > threshMat ? 255 : 0 (THRESH_BINARY)
     cv::cuda::compare(src, threshMat, dst, cv::CMP_GT); // dst = mask
     // dst יוצא בינארי (0/255)
-}
-
-
-void cuda_gray_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
-{
-    cv::cuda::cvtColor(src, dst, cv::COLOR_BGR2GRAY);
-    SAVE_DEBUG_IMAGE(dst);
-}
-
-
-void cuda_gaussian_blur_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
-{
-    auto gauss_filter = cv::cuda::createGaussianFilter(src.type(), src.type(), cv::Size(5, 5), 0);
-    gauss_filter->apply(src, dst);
-    SAVE_DEBUG_IMAGE(dst);
 }
 
 

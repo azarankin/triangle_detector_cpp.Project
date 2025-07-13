@@ -1,61 +1,220 @@
 
 #include "utils.cuh"
 #include <utils_cpp.h>
-#include <utils_cuda_opencv.cuh>
+#include <utils_pure_cuda.cuh>
 
 
-void adaptive_threshold_cpu(const cv::Mat& src, cv::Mat& dst) 
+namespace benchmark 
 {
-    
-    adaptive_threshold_filter(src, dst);
+
+
+
+
+void threshold_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    ::threshold_filter(src, dst);
 }
 
-void adaptive_threshold_cuda_opencv(const cv::Mat& src, cv::Mat& dst) {
+
+
+
+void pure_cuda_threshold_filter(
+    const cv::Mat& src,
+    cv::Mat& dst
+)
+{
     cv::cuda::GpuMat gpu_src(src);
     cv::cuda::GpuMat gpu_dst;
-    cuda_adaptive_threshold_filter(gpu_src, gpu_dst);
-    gpu_dst.download(dst);
+    CV_Assert(src.type() == CV_8UC1); // BGR input
+
+    dst.create(src.rows, src.cols, CV_8UC1);
+
+    // PURE CUDA על buffers ישירות:
+    // עובר stride עבור source ו-destination, plus default stream
+    ::pure_cuda_threshold_filter(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows, src.cols, dst.cols);
+    
+    std::cout << "CUDA threshold_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
+    // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
 }
 
 
+
+
+
+
+
+
+void adaptive_threshold_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    ::adaptive_threshold_filter(src, dst);
+}
+
+
+
+
+void pure_cuda_adaptive_threshold(
+    const cv::Mat& src,
+    cv::Mat& dst
+)
+{
+    cv::cuda::GpuMat gpu_src(src);
+    cv::cuda::GpuMat gpu_dst;
+    CV_Assert(src.type() == CV_8UC1); // BGR input
+
+    dst.create(src.rows, src.cols, CV_8UC1);
+
+    // PURE CUDA על buffers ישירות:
+    // עובר stride עבור source ו-destination, plus default stream
+    ::pure_cuda_adaptive_threshold(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows, src.cols, dst.cols);
+    
+    std::cout << "CUDA adaptive_threshold_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
+    // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
+}
+
+
+
+
+
+
+
+
+
+
+
+void gaussian_blur_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    ::gaussian_blur_filter(src, dst);
+}
+
+
+
+void pure_cuda_gaussian_blur_filter(
+    const cv::Mat& src,
+    cv::Mat& dst
+)
+{
+    //upload_gaussian_kernel_5x5(); // Assuming this function uploads the Gaussian kernel to the GPU
+
+
+    cv::cuda::GpuMat gpu_src(src);
+    cv::cuda::GpuMat gpu_dst;
+    CV_Assert(src.type() == CV_8UC1); // BGR input
+
+    dst.create(src.rows, src.cols, CV_8UC1);
+
+    // PURE CUDA על buffers ישירות:
+    // עובר stride עבור source ו-destination, plus default stream
+    ::pure_cuda_gaussian_blur_filter(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows, src.cols, dst.cols, 0);
+    
+    std::cout << "CUDA gaussian_blur_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
+    // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
+}
+
+
+
+
+void gray_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    ::gray_filter(src, dst);
+}
+
+void pure_cuda_gray_filter(const cv::Mat& src, cv::Mat& dst) {
+    cv::cuda::GpuMat gpu_src(src);
+    cv::cuda::GpuMat gpu_dst;
+    CV_Assert(src.type() == CV_8UC3); // BGR input
+
+    dst.create(src.rows, src.cols, CV_8UC1);
+
+    // PURE CUDA על buffers ישירות:
+
+    ::cuda_pure_gray_filter_async(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows);
+    std::cout << "CUDA gray_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
+    // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
+
+}
+
+
+
+
+
+} // namespace benchmark
+
+
+
+
+
+namespace profiling
+{   
+}
+
+
+
+void benchmark_and_compare_logic(
+    const cv::Mat& input,
+    const std::vector<std::pair<std::string, std::function<void(const cv::Mat&, cv::Mat&)>>>& algorithms,
+    const fs::path& output_dir,
+    const std::string& bench_name
+);
 
 int main()
 {
     fs::path dir = fs::path(__FILE__).parent_path();
     fs::path output_path = dir / "out";
-    fs::path input_path = dir / "input_image.png";
+    fs::path input_path = dir / "input";
+    fs::path input_image = input_path / "input_image.png";
+    if (!fs::exists(output_path)) fs::create_directories(output_path);
+    // 3 Channel BGR
+    cv::Mat input_color = cv::imread(input_image.string(), cv::IMREAD_COLOR);
+    if ( input_color.empty()) { std::cerr << RED << "✗ ERROR: Failed to read " << input_image << RESET << std::endl; return 1; }
+    std::cout << "✓ Loaded image: " << input_color.cols << "x" << input_color.rows << " channels=" << input_color.channels() << std::endl;
+    // 1 Channel Grayscale
+    cv::Mat input = cv::imread(input_image.string(), cv::IMREAD_GRAYSCALE);
+    if ( input.empty()) { std::cerr << RED << "✗ ERROR: Failed to read " << input_image << RESET << std::endl; return 1; }
+    std::cout << "✓ Loaded image: " << input.cols << "x" << input.rows << " channels=" << input.channels() << std::endl;
 
-    // יצירת תיקיית פלט אם לא קיימת
-    if (!fs::exists(output_path))
-        fs::create_directories(output_path);
 
-    cv::Mat input = cv::imread(input_path.string(), cv::IMREAD_GRAYSCALE);
-    if (input.empty()) {
-        std::cerr << RED << "✗ ERROR: Failed to read " << input_path << RESET << std::endl;
-        return 1;
-    }
+    // הרשימת אלגוריתמים: כל זוג ירוץ אוטומטית ויבוצע ביניהם diff+שמירה+הדפסה
+    auto algorithms_gray_filter = std::vector<std::pair<std::string, std::function<void(const cv::Mat&, cv::Mat&)>>>
+    {
+        {"CPU", benchmark::gray_filter},
+        {"PURE_CUDA", benchmark::pure_cuda_gray_filter}
+        //  {"PURE_CUDA", benchmark::adaptive_threshold_pure_cuda} // אם יש לך גרסה של pure cuda
+    };
+    benchmark_and_compare_logic(input_color, algorithms_gray_filter, output_path, "Gray_Filter");
 
-    // יצירת פלט CPU ו־CUDA
-    ImageData cpu = run_image_process("CPU", adaptive_threshold_cpu, input);
-    ImageData cuda = run_image_process("CUDA_OPENCV", adaptive_threshold_cuda_opencv, input);
 
-    // שמירת תמונות פלט
-    cv::imwrite((output_path / "output_CPU.png").string(), cpu.output_image);
-    cv::imwrite((output_path / "output_CUDA_OPENCV.png").string(), cuda.output_image);
+    // הרשימת אלגוריתמים: כל זוג ירוץ אוטומטית ויבוצע ביניהם diff+שמירה+הדפסה
+    auto algorithms_gaussian_blur = std::vector<std::pair<std::string, std::function<void(const cv::Mat&, cv::Mat&)>>>
+    {
+        {"CPU", benchmark::gaussian_blur_filter},
+        {"PURE_CUDA", benchmark::pure_cuda_gaussian_blur_filter}
+        //  {"PURE_CUDA", benchmark::adaptive_threshold_pure_cuda} // אם יש לך גרסה של pure cuda
+    };
+    benchmark_and_compare_logic(input, algorithms_gaussian_blur, output_path, "Gaussian_Blur_Filter");
 
-    // חישוב diff
-    DiffStats diff = compute_image_difference(cpu.output_image, cuda.output_image);
 
-    // שמירת diff
-    cv::imwrite((output_path / "diff_CPU__CUDA_OPENCV.png").string(), diff.diff_image);
 
-    // הצגה והדפסה לקובץ
-    print_diff_stats(diff, "CPU vs CUDA_OPENCV");
-    save_diff_stats_to_file(diff, "CPU vs CUDA_OPENCV", (output_path / "bench_results.txt").string());
+    // הרשימת אלגוריתמים: כל זוג ירוץ אוטומטית ויבוצע ביניהם diff+שמירה+הדפסה
+    auto algorithms_adaptive_threshold = std::vector<std::pair<std::string, std::function<void(const cv::Mat&, cv::Mat&)>>>
+    {
+        {"CPU", benchmark::adaptive_threshold_filter},
+        {"PURE_CUDA", benchmark::pure_cuda_adaptive_threshold}
+        //  {"PURE_CUDA", benchmark::adaptive_threshold_pure_cuda} // אם יש לך גרסה של pure cuda
+    };
+    benchmark_and_compare_logic(input, algorithms_adaptive_threshold, output_path, "Adaptive_Threshold");
 
-    // זמני ריצה (כללי)
-    std::cout << BOLD << "⏱️ CPU duration: " << std::setprecision(3) << cpu.duration << " ms" << RESET << std::endl;
-    std::cout << BOLD << "⏱️ CUDA_OPENCV duration: " << std::setprecision(3) << cuda.duration << " ms" << RESET << std::endl;
+
+    
+    // הרשימת אלגוריתמים: כל זוג ירוץ אוטומטית ויבוצע ביניהם diff+שמירה+הדפסה
+    auto algorithms_threshold_filter = std::vector<std::pair<std::string, std::function<void(const cv::Mat&, cv::Mat&)>>>
+    {
+        {"CPU", benchmark::threshold_filter},
+        {"PURE_CUDA", benchmark::pure_cuda_threshold_filter}
+        //  {"PURE_CUDA", benchmark::adaptive_threshold_pure_cuda} // אם יש לך גרסה של pure cuda
+    };
+    benchmark_and_compare_logic(input, algorithms_threshold_filter, output_path, "Threshold_Filter");
+
+
 
     std::cout << GREEN << "✓ Done." << RESET << std::endl;
     return 0;
@@ -65,14 +224,57 @@ int main()
 
 
 
-/*
+void benchmark_and_compare_logic(
+    const cv::Mat& input,
+    const std::vector<std::pair<std::string, std::function<void(const cv::Mat&, cv::Mat&)>>>& algorithms,
+    const fs::path& output_dir,
+    const std::string& bench_name
+) {
 
-    fs::path dir = fs::path(__FILE__).parent_path();
-    fs::path output_path = dir / "out";
-    fs::path input_path = dir / "input_image.png";
-    fs::path expected_cpu_path = dir / "utils_adaptive_threshold_filter.png";
-    cv::Mat cpu_expected = cv::imread(expected_cpu_path.string(), cv::IMREAD_GRAYSCALE);
+    const fs::path bench_dir = output_dir / bench_name;
 
-    cv::imwrite(output_path/"output_CUDA_OPENCV.png", cuda.output_image);
+    if (!fs::exists(output_dir)) fs::create_directories(output_dir);
+    if (!fs::exists(bench_dir)) fs::create_directories(bench_dir);
+
+
+    std::vector<ImageData> results;
+    for (const auto& [name, func] : algorithms) {
+        ImageData res = run_image_process(name, func, input);
+        results.push_back(res);
+        cv::imwrite((bench_dir / ("output_" + name + ".png")).string(), res.output_image);
+    }
+
+    // השוואה בין כל זוג אלגוריתמים
+    fs::path bench_results_file = bench_dir / "bench_results.txt";
+    std::filesystem::remove(bench_results_file);
     
-*/
+    std::string banchmark_on = "";
+    for (size_t i = 0; i < results.size(); ++i)
+    {
+        banchmark_on += results[i].name +" ";
+    }
+
+
+    title_print(bench_name, banchmark_on);
+
+    for (size_t i = 0; i < results.size(); ++i) 
+    {
+        for (size_t j = i+1; j < results.size(); ++j) 
+        {
+            DiffStats diff = compute_image_difference(results[i].output_image, results[j].output_image);
+            std::string pair_name = results[i].name + "__" + results[j].name;
+            cv::imwrite((bench_dir / ("diff_" + pair_name + ".png")).string(), diff.diff_image);
+            print_diff_stats(diff, pair_name, bench_name);
+            save_diff_stats_to_file(diff, pair_name, (bench_results_file).string());
+        }
+    }
+
+
+    /*To comment*/
+    for (const auto& res : results)
+    {
+        std::cout << BOLD << "⏱️ " << res.name << " duration: " << std::setprecision(3) << res.duration << " ms" << RESET << std::endl;
+    }
+}
+
+
