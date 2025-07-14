@@ -71,6 +71,7 @@
         "any": "cpp",
         "csignal": "cpp",
         "forward_list": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "cassert": "cpp"
     }
 }

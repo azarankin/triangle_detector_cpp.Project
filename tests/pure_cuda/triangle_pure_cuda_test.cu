@@ -27,7 +27,7 @@ class CUDAOpenCVTest : public TriangleImageTest
 TEST_F(CUDAOpenCVTest, CudaOpenCVMessage) 
 {
     
-    ASSERT_EQ(triangle_print_message(), "cuda_opencv_triangle_detector"); 
+    ASSERT_EQ(triangle_print_message(), "pure_cuda_triangle_detector"); 
 }
 
 

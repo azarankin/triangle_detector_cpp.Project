@@ -38,11 +38,16 @@ namespace fs = std::filesystem;
 // ---------- Structs ----------
 struct ImageData 
 {
-    cv::Mat cpu_image;
+
     std::string name;
-    std::function<void(const cv::Mat&, cv::Mat&)> function;
+
     double duration = 0.0;
+
     cv::Mat output_image;
+
+    int proffiler_runs = 0; 
+
+    std::filesystem::path output_image_path;
 };
 
 struct DiffStats 
@@ -65,6 +70,10 @@ struct DiffStats
     bool is_different_types = false;
     double mean_time_taked = 0.0;
     int proffiler_runs = 0; //number of runnings
+    fs::path output_image_path;
+    std::string proffiler_function_name; //name of the profiled function
+    std::shared_ptr<ImageData> image1 = nullptr; // Placeholder for ImageData reference, not used in this context
+    std::shared_ptr<ImageData> image2 = nullptr; 
 };
 
 // ---------- Benchmark function ----------
@@ -93,11 +102,13 @@ void profile_and_update_stats(
     DiffStats& stats,
     const std::function<void(const cv::Mat&, cv::Mat&)>& fn,
     const cv::Mat& input,
+    const std::string& function_name,
     int runs = 100)
 {
     cv::Mat output;
     stats.mean_time_taked = profile_function(fn, input, output, runs);
     stats.proffiler_runs = runs;
+    stats.proffiler_function_name = function_name;
 }
 
 // ---------- Diff logic ----------
@@ -176,8 +187,7 @@ void print_diff_stats(const DiffStats& stats, const std::string& test_name, cons
     {
         std::cout << BOLD << BLUE << "⏱️ Mean Time: Not profiled" << RESET << std::endl;
     }
-    std::cout << BLUE << "=============================================\n" << RESET << std::endl;
-    std::cout << std::endl;
+    //std::cout << BLUE << "=============================================" << RESET << std::endl;
 }
 
 // ---------- Save colorful diff to file (no ansi, but with icons and pretty layout) ----------
@@ -217,19 +227,6 @@ void save_diff_stats_to_file(const DiffStats& stats, const std::string& test_nam
 
 
 
-ImageData run_image_process(const std::string& name, 
-                           const std::function<void(const cv::Mat&, cv::Mat&)>& fn, 
-                           const cv::Mat& input)
-{
-    ImageData data;
-    data.name = name;
-    data.function = fn;
-    auto t1 = std::chrono::high_resolution_clock::now();
-    fn(input, data.output_image);
-    auto t2 = std::chrono::high_resolution_clock::now();
-    data.duration = std::chrono::duration<double, std::milli>(t2 - t1).count();
-    return data;
-}
 
 
 

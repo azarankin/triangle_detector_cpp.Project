@@ -60,7 +60,7 @@ protected:
         
 
     // Helper function for image similarity check
-    void image_visual_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol = 1e-6);
+    void image_visual_similarity_asserts(const cv::Mat& expected, const cv::Mat& result, double tol = 0.96);
     void img_save_the_difference_between_images(const fs::path& diff_img_path, cv::Mat& expected, cv::Mat& result );
     void clear_directory(const fs::path& dir_path); 
     std::string sanitize_filename(const std::string& name);

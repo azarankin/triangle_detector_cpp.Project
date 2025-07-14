@@ -16,13 +16,16 @@ std::string utils_print_message_pure_cuda();
 
 __global__ void bgr2gray_kernel(const uchar3* src, unsigned char* dst, int width, int height);
 
-void cuda_pure_gray_filter_async(const unsigned char* h_src_bgr, unsigned char* h_dst_gray, int width, int height, cudaStream_t stream = 0);
+void cuda_pure_gray_filter(const unsigned char* h_src_bgr, unsigned char* h_dst_gray, int width, int height, cudaStream_t stream = 0);
 
 
 
 
 
-void upload_gaussian_kernel_5x5();
+
+
+
+//void upload_gaussian_kernel_5x5();
 
 __global__ void gaussian_blur_kernel(const unsigned char* __restrict__ src, unsigned char* __restrict__ dst, int width, int height, int src_stride, int dst_stride);
 

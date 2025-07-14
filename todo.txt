@@ -48,3 +48,7 @@ set benchmark with the same looking images but noisy  // amoust same images // d
 save last banchmark results (text and images)
 quality profiler
 cuda stream
+apply C++ benchmark with python, jupiter notebook
+Version 2   
+NSIGHT – תוציא flame graphs או occupancy plots. אל תסתפק ב-console בלבד.
+reorganize add_subdirectory CMakeLists.txt

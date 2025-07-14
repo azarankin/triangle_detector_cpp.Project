@@ -12,7 +12,14 @@
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
-                "ENABLE_PURE_CUDA_TESTS": "OFF"
+                "ENABLE_LIBRARIES": "OFF",
+                "ENABLE_BENCHMARKS": "ON",
+                "ENABLE_EXECUTABLES": "OFF",
+                "ENABLE_ALL_TESTS_COMPILATION": "ON",
+                "ENABLE_CPP_TESTS": "OFF",
+                "ENABLE_CUDA_OPENCV_TESTS": "OFF",
+                "ENABLE_PURE_CUDA_TESTS": "ON"
+                
             }
         },
         {

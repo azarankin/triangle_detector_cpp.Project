@@ -7,7 +7,6 @@
 #include <opencv2/cudaimgproc.hpp> // cv::cuda::cvtColor
 #include <opencv2/cudafilters.hpp>
 
-
 std::string triangle_print_message() 
 {
     std::cout << "\t\t\t\t\t\t\tPrinting from CUDA OpenCV Triangel Detector library!" << std::endl;
@@ -21,38 +20,42 @@ std::vector<cv::Point> find_shape_contour(const std::string& address)
     cv::Mat host_img = cv::imread(address);
     if (host_img.empty())
         throw std::runtime_error("Failed to load image: " + address);
+    
+    //std::cout << "DEBUG: Loaded image: " << host_img.cols << "x" << host_img.rows << " channels=" << host_img.channels() << std::endl;
 
     // Upload to GPU
     cv::cuda::GpuMat gpu_img(host_img);
+    //std::cout << "DEBUG: GPU upload: " << gpu_img.cols << "x" << gpu_img.rows << " channels=" << gpu_img.channels() << std::endl;
 
     // Convert to grayscale
     cv::cuda::GpuMat gpu_gray;
     cuda_gray_filter(gpu_img ,gpu_gray); // , "find_shape_contour__gray"
+    //std::cout << "DEBUG: After gray: " << gpu_gray.cols << "x" << gpu_gray.rows << " channels=" << gpu_gray.channels() << std::endl;
 
     // Gaussian blur
     cv::cuda::GpuMat gpu_blur;
     cuda_gaussian_blur_filter(gpu_gray, gpu_blur); // , "find_shape_contour__blur"
+    //std::cout << "DEBUG: After blur: " << gpu_blur.cols << "x" << gpu_blur.rows << " channels=" << gpu_blur.channels() << std::endl;
 
     // Threshold
     cv::cuda::GpuMat gpu_thresh;
     cv::Mat thresh1;
     cuda_threshold_filter(gpu_blur, gpu_thresh); // , "find_shape_contour__thresh"
+    //std::cout << "DEBUG: After threshold GPU: " << gpu_thresh.cols << "x" << gpu_thresh.rows << " channels=" << gpu_thresh.channels() << std::endl;
+    
     gpu_thresh.download(thresh1);
+    //std::cout << "DEBUG: After download: " << thresh1.cols << "x" << thresh1.rows << " channels=" << thresh1.channels() << std::endl;
 
     // Find contours (CPU only)
     std::vector<std::vector<cv::Point>> contours_template;
-    cv::findContours(thresh1, contours_template, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+    find_contours(contours_template, thresh1);
 
-    // Sort contours by area (descending)
-    std::sort(contours_template.begin(), contours_template.end(),
-        [](const std::vector<cv::Point>& a, const std::vector<cv::Point>& b) {
-            return cv::contourArea(a) > cv::contourArea(b);
-        });
 
-    if (contours_template.size() < 2)
-        throw std::runtime_error("Template image must contain at least two contours.");
+    // Sort contours by area
+    auto second_largest_contour = get_second_largest_contour(contours_template);
 
-    return contours_template[1];
+    // Draw the second largest contour
+    return second_largest_contour;
 }
 
 
@@ -63,24 +66,31 @@ std::vector<std::vector<cv::Point>> contour_compare(
     double min_area_ratio, 
     double max_area_ratio)
 {
+    //std::cout << "DEBUG: contour_compare input: " << target_frame.cols << "x" << target_frame.rows << " channels=" << target_frame.channels() << std::endl;
+    
     // Upload image to GPU
     cv::cuda::GpuMat gpu_frame(target_frame);
+    //std::cout << "DEBUG: contour_compare GPU upload: " << gpu_frame.cols << "x" << gpu_frame.rows << " channels=" << gpu_frame.channels() << std::endl;
 
     // Gray filter (CUDA)
     cv::cuda::GpuMat gpu_gray;
     cuda_gray_filter(gpu_frame ,gpu_gray); // , "contour_compare__gray"
+    //std::cout << "DEBUG: contour_compare after gray: " << gpu_gray.cols << "x" << gpu_gray.rows << " channels=" << gpu_gray.channels() << std::endl;
 
     // Gaussian blur (CUDA)
     cv::cuda::GpuMat gpu_blur;
     cuda_gaussian_blur_filter(gpu_gray, gpu_blur); // , "contour_compare__blur"
+    //std::cout << "DEBUG: contour_compare after blur: " << gpu_blur.cols << "x" << gpu_blur.rows << " channels=" << gpu_blur.channels() << std::endl;
 
     // Adaptive threshold (CUDA)
     cv::cuda::GpuMat gpu_thresh;
     cuda_adaptive_threshold_filter(gpu_blur, gpu_thresh); // , "contour_compare__thresh"
+    //std::cout << "DEBUG: contour_compare after adaptive threshold: " << gpu_thresh.cols << "x" << gpu_thresh.rows << " channels=" << gpu_thresh.channels() << std::endl;
 
     // Download the thresholded image back to CPU
     cv::Mat thresh2;
     gpu_thresh.download(thresh2);
+    //std::cout << "DEBUG: contour_compare after download: " << thresh2.cols << "x" << thresh2.rows << " channels=" << thresh2.channels() << std::endl;
 
     // Contours (CPU)
     std::vector<std::vector<cv::Point>> contours_target;

@@ -12,7 +12,12 @@ set(PROJECT_LANGUAGES CXX CUDA)
 project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} LANGUAGES ${PROJECT_LANGUAGES})
 
 
-option(ENABLE_EXECUTABLES "..." OFF)
+
+# Check CMakePresets.json for options
+
+# option(ENABLE_LIBRARIES "Enable building libraries" ON)
+# option(ENABLE_BENCHMARKS "Enable building benchmarks" OFF)
+# option(ENABLE_EXECUTABLES "..." OFF)
 
 
 
@@ -21,40 +26,49 @@ option(ENABLE_EXECUTABLES "..." OFF)
 include(${CMAKE_SOURCE_DIR}/cmake/ProjectConfig.cmake)
 include(${CMAKE_DIR}/AddCustomTarget.cmake)
 
-## C++ Code Files
-add_custom_target(triangle_detector_cpu
-    TYPE LIBRARY
-    SOURCES ${CPU_SRC}
-    LINK_LIBS ${CPU_LINK_LIBS}
-)
 
 
-## CUDA OpenCV Code Files
-add_custom_target(triangle_detector_cuda_opencv
-    TYPE LIBRARY
-    SOURCES ${CUDA_OPENCV_SRC}
-    LINK_LIBS ${CUDA_OPENCV_LINK_LIBS}
-)
 
 
-# ## CUDA Code Files
-# add_custom_target(triangle_detector_pure_cuda
-#     TYPE LIBRARY
-#     SOURCES ${PURE_CUDA_SRC}
-#     LINK_LIBS ${PURE_CUDA_LINK_LIBS}
-# )
 
+
+
+if(ENABLE_LIBRARIES)
+    include(${CMAKE_DIR}/AddExecutable.cmake)
+    ## C++ Code Files
+    add_custom_target(triangle_detector_cpu
+        TYPE LIBRARY
+        SOURCES ${CPU_SRC}
+        LINK_LIBS ${CPU_LINK_LIBS}
+    )
+
+
+    ## CUDA OpenCV Code Files
+    add_custom_target(triangle_detector_cuda_opencv
+        TYPE LIBRARY
+        SOURCES ${CUDA_OPENCV_SRC}
+        LINK_LIBS ${CUDA_OPENCV_LINK_LIBS}
+    )
+
+
+    # ## PURE CUDA Code Files
+    # add_custom_target(triangle_detector_pure_cuda
+    #     TYPE LIBRARY
+    #     SOURCES ${PURE_CUDA_SRC}
+    #     LINK_LIBS ${PURE_CUDA_LINK_LIBS}
+    # )
+endif()
 
 # POC Benchmark Code Files
-
-add_custom_target(utils_benchmark
-    TYPE EXECUTABLE
-    SOURCES ${BENCHMARK_DIR}/main.cu ${BENCHMARK_SRC}
-    LINK_LIBS ${BENCHMARK_LINK_LIBS}
-    OUTPUT_DIR "${BENCHMARK_DIR}/out"
-    INCLUDES ${BENCHMARK_DIR}
-)
-
+if(ENABLE_BENCHMARKS)
+    add_custom_target(utils_benchmark
+        TYPE EXECUTABLE
+        SOURCES ${BENCHMARK_DIR}/benchmark.cu ${BENCHMARK_SRC}
+        LINK_LIBS ${BENCHMARK_LINK_LIBS}
+        OUTPUT_DIR "${BENCHMARK_DIR}/out"
+        INCLUDES ${BENCHMARK_DIR}
+    )
+endif()
 
 
 

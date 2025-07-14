@@ -11,7 +11,7 @@
 std::string utils_print_message_pure_cuda() 
 {
     std::cout << "\t\t\t\t\t\t\tPrinting from CUDA OpenCV Utils library!" << std::endl;
-    return "pure_cuda_utils";
+    return "pure_cuda_triangle_detector";
 }
 
 // void cuda_gray_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
@@ -35,7 +35,7 @@ __global__ void bgr2gray_kernel(const uchar3* src, unsigned char* dst, int width
 }
 
 
-void cuda_pure_gray_filter_async(
+void cuda_pure_gray_filter(
     const unsigned char* h_src_bgr,
     unsigned char* h_dst_gray,
     int width,

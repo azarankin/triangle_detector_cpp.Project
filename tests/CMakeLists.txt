@@ -1,18 +1,19 @@
 # tests/CMakeLists.txt
 
-option(ENABLE_ALL_TESTS_COMPILATION "..." OFF)
-option(ENABLE_CPP_TESTS "..." OFF)
-option(ENABLE_CUDA_OPENCV_TESTS "..." OFF)
-option(ENABLE_PURE_CUDA_TESTS "..." OFF)
 
+# Check CMakePresets.json for options
 
+# option(ENABLE_ALL_TESTS_COMPILATION "..." OFF)
+# option(ENABLE_CPP_TESTS "..." OFF)
+# option(ENABLE_CUDA_OPENCV_TESTS "..." OFF)
+# option(ENABLE_PURE_CUDA_TESTS "..." OFF)
 
 include(${CMAKE_DIR}/AddCustomTarget.cmake)
 include(${CMAKE_DIR}/AddGTestExec.cmake)
 
 
 
-if(ENABLE_CPP_TESTS)
+if(ENABLE_CPP_TESTS OR ENABLE_ALL_TESTS_COMPILATION)
 
     ## C++ TEST Code FILES
     add_custom_target(triangle_detector_cpp_for_test
@@ -42,7 +43,7 @@ endif()
 
 
 
-if(ENABLE_CUDA_OPENCV_TESTS)
+if(ENABLE_CUDA_OPENCV_TESTS OR ENABLE_ALL_TESTS_COMPILATION)
 
     # CUDA OpenCV TEST Code FILES
     add_custom_target(triangle_detector_cuda_opencv_for_test
@@ -73,7 +74,7 @@ endif()
 
 
 
-if(ENABLE_PURE_CUDA_TESTS)
+if(ENABLE_PURE_CUDA_TESTS OR ENABLE_ALL_TESTS_COMPILATION)
 
     # CUDA TEST Code FILES
     add_custom_target(triangle_detector_pure_cuda_for_test
@@ -114,6 +115,7 @@ if(ENABLE_ALL_TESTS_COMPILATION)
     set(ALL_TRIANGLE_DETECTOR_TESTS_DEPENDENCIES 
         triangle_detector_cpp_tests
         triangle_detector_cuda_opencv_tests
+        triangle_detector_pure_cuda_tests
     )
 
     add_gtest_exec(
@@ -126,6 +128,7 @@ if(ENABLE_ALL_TESTS_COMPILATION)
     set(ALL_UTILS_TESTS_DEPENDENCIES 
         utils_cpp_tests
         utils_cuda_opencv_tests
+        utils_pure_cuda_tests
     )
 
     add_gtest_exec(
