@@ -4,7 +4,7 @@
 #include <utils_cuda_opencv.cuh>
 
 /* Cpp application*/
-class CudaOpenCVUtils : public UtilsTest
+class PureCudaUtils : public UtilsTest
 {
     void SetUp() override
     {
@@ -26,7 +26,7 @@ protected:
     cv::Mat output;
     cv::cuda::GpuMat output_gpu;
     
-    void image_visual_similarity_asserts_for_gpu_output(const std::string& expected_path, double tol = 0.96)
+    void image_visual_similarity_asserts_for_gpu_output(const std::string& expected_path)
     {
 
         output_gpu.download(output);
@@ -37,7 +37,7 @@ protected:
         cv::Mat expected_image = get_gray_filtered_img(expected_path);
         //ASSERT_FALSE(expected_image.empty()) << "Failed to load expected image: " << expected_path;
         //ASSERT_FALSE(result.empty()) << "Result image is empty.";
-        TestLogic::image_visual_similarity_asserts(expected_image, output, tol);
+        TestLogic::image_visual_similarity_asserts(expected_image, output);
     }
 
 
@@ -51,13 +51,13 @@ protected:
 /*clean C++ Utils code Tests*/
 //tested on gray image
 
-TEST_F(CudaOpenCVUtils, CppCompiledUtilsMessage) 
+TEST_F(PureCudaUtils, CppCompiledUtilsMessage) 
 {
     ASSERT_EQ(utils_print_message_cuda_opencv_utils(), "cuda_opencv_utils"); 
 }
 
 
-TEST_F(CudaOpenCVUtils, GrayFilter) 
+TEST_F(PureCudaUtils, GrayFilter) 
 { 
     cv::Mat input_image_color = cv::imread(original_img, cv::IMREAD_COLOR);
     cv::cuda::GpuMat input_image_gpu;
@@ -68,7 +68,7 @@ TEST_F(CudaOpenCVUtils, GrayFilter)
 }
 
 
-TEST_F(CudaOpenCVUtils, GaussianBlueFilter) 
+TEST_F(PureCudaUtils, GaussianBlueFilter) 
 { 
 
     cuda_gaussian_blur_filter(input_image_gpu, output_gpu);
@@ -80,7 +80,7 @@ TEST_F(CudaOpenCVUtils, GaussianBlueFilter)
 }
 
 
-TEST_F(CudaOpenCVUtils, AdaptiveThresholdFilter) 
+TEST_F(PureCudaUtils, AdaptiveThresholdFilter) 
 { 
     cuda_adaptive_threshold_filter(input_image_gpu, output_gpu);
     output_gpu.download(output);
@@ -90,7 +90,7 @@ TEST_F(CudaOpenCVUtils, AdaptiveThresholdFilter)
 }
 
 
-TEST_F(CudaOpenCVUtils, ThresholdFilter) 
+TEST_F(PureCudaUtils, ThresholdFilter) 
 { 
     cuda_threshold_filter(input_image_gpu, output_gpu);
     image_visual_similarity_asserts_for_gpu_output(expected_threshold_filter_img);

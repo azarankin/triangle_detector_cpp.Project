@@ -32,8 +32,8 @@ std::vector<std::string> split(const std::string& s, char delimiter) {
 int main() {
     // run_test_binary("triangle_detector_cpp_tests");
     // run_test_binary("triangle_cuda_opencv_test");
-#ifdef ALL_TEST_BINARIES
-    std::string binaries_str = ALL_TEST_BINARIES;
+#ifdef ALL_TESTS_BINARIES
+    std::string binaries_str = ALL_TESTS_BINARIES;
     auto binaries = split(binaries_str, ',');
     for (const auto& bin : binaries) {
         std::cout << "Running test: " << bin << std::endl;

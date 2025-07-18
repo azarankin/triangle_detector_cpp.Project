@@ -7,7 +7,7 @@
 
 /* CUDA OpenCV Triangle Detector application*/
 
-class CUDAOpenCVTest : public TriangleImageTest
+class PureCUDATest : public TriangleImageTest
 {
     void SetUp() override
     {
@@ -24,7 +24,7 @@ class CUDAOpenCVTest : public TriangleImageTest
 };
 
 
-TEST_F(CUDAOpenCVTest, CudaOpenCVMessage) 
+TEST_F(PureCUDATest, CudaOpenCVMessage) 
 {
     
     ASSERT_EQ(triangle_print_message(), "cuda_opencv_triangle_detector"); 
@@ -33,7 +33,7 @@ TEST_F(CUDAOpenCVTest, CudaOpenCVMessage)
 
 
 
-TEST_F(CUDAOpenCVTest, GenerateTriangle) /*cuda finish*/
+TEST_F(PureCUDATest, GenerateTriangle) /*cuda finish*/
 {
     create_triangle_image(new_triangle_img);
     cv::Mat expected = cv::imread(this->expected_triangle_img, cv::IMREAD_COLOR);
@@ -46,7 +46,7 @@ TEST_F(CUDAOpenCVTest, GenerateTriangle) /*cuda finish*/
 
 
 
-TEST_F(CUDAOpenCVTest, DetectTriangleContour) 
+TEST_F(PureCUDATest, DetectTriangleContour) 
 {
     auto template_contour = find_shape_contour(triangle_img);
     cv::Mat triangle_image = cv::imread(triangle_img, cv::IMREAD_COLOR);
@@ -55,7 +55,7 @@ TEST_F(CUDAOpenCVTest, DetectTriangleContour)
     image_visual_similarity_asserts(expected, result);
 }
 
-TEST_F(CUDAOpenCVTest, DetectTriangleContourOnAnother) 
+TEST_F(PureCUDATest, DetectTriangleContourOnAnother) 
 {
     auto template_contour = find_shape_contour(triangle_img);
     cv::Mat other_triangle_image = cv::imread(other_triangle_img, cv::IMREAD_COLOR);

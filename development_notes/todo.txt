@@ -52,3 +52,10 @@ apply C++ benchmark with python, jupiter notebook
 Version 2   
 NSIGHT – תוציא flame graphs או occupancy plots. אל תסתפק ב-console בלבד.
 reorganize add_subdirectory CMakeLists.txt
+"שיפרתי את הקרנלים לפי התובנות מ־NSight"
+"עברתי ל־asynchronous batching של פריימים"
+"יצרתי Flame Graph משולב עם nvtxRangePush"
+"השוויתי מול DeepStream / פתרון Production"
+
+NSIGHT
+לתקן CMAKE

@@ -4,7 +4,7 @@
 #include <utils_pure_cuda.cuh>
 
 /* Cpp application*/
-class CudaOpenCVUtils : public UtilsTest
+class PureCudaUtils : public UtilsTest
 {
     void SetUp() override
     {
@@ -49,20 +49,19 @@ protected:
 /*clean C++ Utils code Tests*/
 //tested on gray image
 
-TEST_F(CudaOpenCVUtils, CppCompiledUtilsMessage) 
+TEST_F(PureCudaUtils, CppCompiledUtilsMessage) 
 {
     ASSERT_EQ(utils_print_message_pure_cuda(), "pure_cuda_utils"); 
 }
 
 
-TEST_F(CudaOpenCVUtils, GrayFilter) 
+TEST_F(PureCudaUtils, GrayFilter) 
 { 
     cv::Mat input_image_color = cv::imread(original_img, cv::IMREAD_COLOR);
-    CV_Assert(input_image_color.type() == CV_8UC3); // BGR input
-
+    ASSERT_EQ(input_image_color.type(), CV_8UC3); // BGR input
     output.create(input_image_color.rows, input_image_color.cols, CV_8UC1);
 
-    cuda_pure_gray_filter(input_image_color.ptr<unsigned char>(), output.ptr<unsigned char>(), input_image_color.cols, input_image_color.rows);
+    cuda_pure_gray_filter(input_image_color, output);
 
     image_save(debug_output / "pure_cuda_gray_filter.png", output);
 
@@ -70,41 +69,40 @@ TEST_F(CudaOpenCVUtils, GrayFilter)
 }
 
 
-TEST_F(CudaOpenCVUtils, GaussianBlueFilter) 
+TEST_F(PureCudaUtils, GaussianBlueFilter) 
 { 
-    CV_Assert(input_image.type() == CV_8UC1); // BGR input
+    ASSERT_EQ(input_image.type(), CV_8UC1); // BGR input
     output.create(input_image.rows, input_image.cols, CV_8UC1);
 
-    pure_cuda_gaussian_blur_filter(input_image.ptr<unsigned char>(), output.ptr<unsigned char>(), input_image.cols, input_image.rows, input_image.cols, output.cols);
+    pure_cuda_gaussian_blur_filter(input_image, output);
 
     //image_save(debug_output / "pure_cuda_gaussian_blur_filter99.png", output);
     //output_gpu.download(output);
-    image_save(debug_output / "output_gaussian_blur_filter.png", output);
+    image_save(debug_output / "pure_cuda_output_gaussian_blur_filter.png", output);
 
     // השתמש בtolerance גבוה יותר עבור השוואת CPU vs CUDA
     image_visual_similarity_asserts_for_gpu_output(expected_gaussian_blur_filter_img); //to fix the tolerance for GPU vs CPU comparison
 }
 
 
-TEST_F(CudaOpenCVUtils, AdaptiveThresholdFilter) 
+TEST_F(PureCudaUtils, AdaptiveThresholdFilter) 
 { 
-
-    CV_Assert(input_image.type() == CV_8UC1); // BGR input
+    ASSERT_EQ(input_image.type(), CV_8UC1); // BGR input
     output.create(input_image.rows, input_image.cols, CV_8UC1);
 
-    pure_cuda_adaptive_threshold(output.ptr<unsigned char>(), output.ptr<unsigned char>(), input_image.cols, input_image.rows, output.cols, output.cols);
+    pure_cuda_adaptive_threshold(input_image, output);
 
-    image_save(debug_output / "cuda_adaptive_threshold_filter.png", output);
+    image_save(debug_output / "pure_cuda_adaptive_threshold_filter.png", output);
 
     image_visual_similarity_asserts_for_gpu_output(expected_adaptive_threshold_filter_img); //to fix the tolerance for GPU vs CPU comparison
 }
-TEST_F(CudaOpenCVUtils, ThresholdFilter) 
+TEST_F(PureCudaUtils, ThresholdFilter) 
 { 
 
-    CV_Assert(input_image.type() == CV_8UC1); // BGR input
+    ASSERT_EQ(input_image.type(), CV_8UC1); // BGR input
     output.create(input_image.rows, input_image.cols, CV_8UC1);
-
-    pure_cuda_threshold_filter(output.ptr<unsigned char>(), output.ptr<unsigned char>(), input_image.cols, input_image.rows, output.cols, output.cols);
+    image_save(debug_output / "pure_cuda_in_threshold_filter.png", input_image);
+    pure_cuda_threshold_filter(input_image, output);
 
     image_save(debug_output / "pure_cuda_threshold_filter.png", output);
     image_visual_similarity_asserts_for_gpu_output(expected_threshold_filter_img);

@@ -4,7 +4,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/AddPostBuildClearOutput.cmake) # Include post-
 function(add_gtest_exec exe_name)
     set(options "")
     set(oneValueArgs "")
-    set(multiValueArgs SOURCES LIBS_TO_LINK OUTPUT_DIRS DEPENDENCIES INCLUDES)
+    set(multiValueArgs SOURCES LIBS_TO_LINK OUTPUT_DIRS DEPENDENCIES INCLUDES DEFINES)
     cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     log_message("add_gtest_exec: ${exe_name}
@@ -46,6 +46,10 @@ function(add_gtest_exec exe_name)
 
     if(DEFINED ARG_INCLUDES)
         target_include_directories(${exe_name} PRIVATE ${ARG_INCLUDES})
+    endif()
+
+    if(DEFINED ARG_DEFINES)
+        target_compile_definitions(${exe_name} PUBLIC ${ARG_DEFINES})
     endif()
 
 endfunction()

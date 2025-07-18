@@ -3,102 +3,109 @@
 
 # Check CMakePresets.json for options
 
-# option(ENABLE_ALL_TESTS_COMPILATION "..." OFF)
-# option(ENABLE_CPP_TESTS "..." OFF)
-# option(ENABLE_CUDA_OPENCV_TESTS "..." OFF)
-# option(ENABLE_PURE_CUDA_TESTS "..." OFF)
+set(TEST_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/current_output")
+set(TEST_OUTPUT_ARCHIVE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/archive_current_output")
+set(TEST_REFERENCE_INPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/reference_input")
+set(TEST_REFERENCE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/data/reference_output")
 
-include(${CMAKE_DIR}/AddCustomTarget.cmake)
-include(${CMAKE_DIR}/AddGTestExec.cmake)
-
+# Set DEBUG_DEFINES ON inside CMakePresets.json if needed
 
 
-if(ENABLE_CPP_TESTS OR ENABLE_ALL_TESTS_COMPILATION)
-
-    ## C++ TEST Code FILES
-    add_custom_target(triangle_detector_cpp_for_test
-        TYPE LIBRARY
-        SOURCES ${CPU_SRC} ${CPU_DEBUG_SRC}
-        LINK_LIBS ${CPU_LINK_LIBS}
-        DEFINES ${DEBUG_DEFINES_CPU}
+if(ENABLE_TEST_DEBUG)
+    set(DEBUG_DEFINES
+        ENABLE_DEBUG_IMAGES ON
+        DEBUG_IMAGE_DIR="${TEST_OUTPUT_DIRECTORY}/debug"
     )
+
+    target_compile_definitions(DebugInterface INTERFACE ${DEBUG_DEFINES})
+endif()
+
+
+set(TEST_DEFINES
+    
+    TEST_OUTPUT_DIRECTORY="${TEST_OUTPUT_DIRECTORY}"
+    TEST_DEBUG_OUTPUT_DIRECTORY="${TEST_OUTPUT_DIRECTORY}/test_debug_output"
+    TEST_OUTPUT_ARCHIVE_DIRECTORY="${TEST_OUTPUT_ARCHIVE_DIRECTORY}"
+    TEST_REFERENCE_INPUT_DIRECTORY="${TEST_REFERENCE_INPUT_DIRECTORY}"
+    TEST_REFERENCE_OUTPUT_DIRECTORY="${TEST_REFERENCE_OUTPUT_DIRECTORY}"
+)
+
+
+add_library(test_logic_lib STATIC ${CMAKE_CURRENT_SOURCE_DIR}/framework/test_logic.cpp)
+target_link_libraries(test_logic_lib PUBLIC gtest gtest_main OpenCV_Interface)
+target_include_directories(test_logic_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/framework)
+target_compile_definitions(test_logic_lib PUBLIC ${TEST_DEFINES})
+add_postbuild_clear_output(test_logic_lib ${TEST_OUTPUT_DIRECTORY})
+add_postbuild_clear_output(test_logic_lib ${TEST_OUTPUT_ARCHIVE_DIRECTORY})
+
+
+add_library(TestInterface INTERFACE)
+target_link_libraries(TestInterface INTERFACE test_logic_lib)
+
+
+
+
+
+if(ENABLE_CPP_TESTS OR ENABLE_ALL_TESTS_COMPILATION_ONLY)
+    #OUTPUT_DIRS ${CPU_TEST_OUTPUT_DIRECTORIES}
 
     ## CPU Tests
-    add_gtest_exec(
-    triangle_detector_cpp_tests
-    SOURCES ${TEST_LOGIC_SRC} ${TESTS_CPP_DIR}/triangle_cpp_test.cpp
-    LIBS_TO_LINK triangle_detector_cpp_for_test
-    OUTPUT_DIRS ${CPU_TEST_OUTPUT_DIRECTORIES}
-    INCLUDES ${TEST_LOGIC_INCLUDES}
-    )
-    add_gtest_exec(
-    utils_cpp_tests
-    SOURCES ${TEST_LOGIC_SRC} ${TESTS_CPP_DIR}/utils_cpp_test.cpp
-    LIBS_TO_LINK triangle_detector_cpp_for_test
-    OUTPUT_DIRS ${CPU_TEST_OUTPUT_DIRECTORIES}
-    INCLUDES ${TEST_LOGIC_INCLUDES}
-    )
+    add_executable(triangle_detector_cpp_tests cpp/triangle_cpp_test.cpp)
+    target_link_libraries(triangle_detector_cpp_tests PRIVATE cpp_shape_detector_lib TestInterface)
+    if(NOT DEFINED ENABLE_ALL_TESTS_COMPILATION_ONLY)
+        gtest_discover_tests(triangle_detector_cpp_tests)
+    endif()
+    
+
+    add_executable(utils_cpp_tests cpp/utils_cpp_test.cpp)
+    target_link_libraries(utils_cpp_tests PRIVATE cpp_utils_lib TestInterface)
+    if(NOT DEFINED ENABLE_ALL_TESTS_COMPILATION_ONLY)
+        gtest_discover_tests(utils_cpp_tests)
+    endif()
 
 endif()
 
 
 
-if(ENABLE_CUDA_OPENCV_TESTS OR ENABLE_ALL_TESTS_COMPILATION)
+if(ENABLE_CUDA_OPENCV_TESTS OR ENABLE_ALL_TESTS_COMPILATION_ONLY)
+    #OUTPUT_DIRS ${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}
 
-    # CUDA OpenCV TEST Code FILES
-    add_custom_target(triangle_detector_cuda_opencv_for_test
-        TYPE LIBRARY
-        SOURCES ${CUDA_OPENCV_SRC} ${CUDA_OPENCV_DEBUG_SRC}
-        LINK_LIBS ${CUDA_OPENCV_LINK_LIBS}
-        DEFINES ${DEBUG_DEFINES_CUDA_OPENCV}
-    )
 
     ## CUDA OPENCV Tests
-    add_gtest_exec(
-    triangle_detector_cuda_opencv_tests
-    SOURCES ${TEST_LOGIC_SRC} ${TESTS_CUDA_OPENCV_DIR}/triangle_cuda_opencv_test.cu
-    LIBS_TO_LINK triangle_detector_cuda_opencv_for_test
-    OUTPUT_DIRS ${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}
-    INCLUDES ${TEST_LOGIC_INCLUDES}
-    )
-    add_gtest_exec(
-    utils_cuda_opencv_tests
-    SOURCES ${TEST_LOGIC_SRC} ${TESTS_CUDA_OPENCV_DIR}/utils_cuda_opencv_test.cu
-    LIBS_TO_LINK triangle_detector_cuda_opencv_for_test
-    OUTPUT_DIRS ${CUDA_OPENCV_TEST_OUTPUT_DIRECTORIES}
-    INCLUDES ${TEST_LOGIC_INCLUDES}
-    )
+    add_executable(triangle_detector_cuda_opencv_tests cuda_opencv/triangle_cuda_opencv_test.cu)
+    target_link_libraries(triangle_detector_cuda_opencv_tests PRIVATE cuda_opencv_shape_detector_lib TestInterface)
+    if(NOT DEFINED ENABLE_ALL_TESTS_COMPILATION_ONLY)
+        gtest_discover_tests(triangle_detector_cuda_opencv_tests)
+    endif()
 
+    add_executable(utils_cuda_opencv_tests cuda_opencv/utils_cuda_opencv_test.cu)
+    target_link_libraries(utils_cuda_opencv_tests PRIVATE cuda_opencv_utils_lib TestInterface)
+    if(NOT DEFINED ENABLE_ALL_TESTS_COMPILATION_ONLY)
+        gtest_discover_tests(utils_cuda_opencv_tests)
+    endif()
 
 endif()
 
 
 
-if(ENABLE_PURE_CUDA_TESTS OR ENABLE_ALL_TESTS_COMPILATION)
+if(ENABLE_PURE_CUDA_TESTS OR ENABLE_ALL_TESTS_COMPILATION_ONLY)
+    #OUTPUT_DIRS ${PURE_CUDA_TEST_OUTPUT_DIRECTORIES}
 
-    # CUDA TEST Code FILES
-    add_custom_target(triangle_detector_pure_cuda_for_test
-        TYPE LIBRARY
-        SOURCES ${PURE_CUDA_SRC} ${PURE_CUDA_DEBUG_SRC}
-        LINK_LIBS ${PURE_CUDA_LINK_LIBS}
-        DEFINES ${DEBUG_DEFINES_PURE_CUDA}
-    )
 
-    ## CUDA Tests
-    add_gtest_exec(
-    triangle_detector_pure_cuda_tests
-    SOURCES ${TEST_LOGIC_SRC} ${TESTS_PURE_CUDA_DIR}/triangle_pure_cuda_test.cu
-    LIBS_TO_LINK triangle_detector_pure_cuda_for_test
-    OUTPUT_DIRS ${PURE_CUDA_TEST_OUTPUT_DIRECTORIES}
-    INCLUDES ${TEST_LOGIC_INCLUDES}
-    )
-    add_gtest_exec(
-    utils_pure_cuda_tests
-    SOURCES ${TEST_LOGIC_SRC} ${TESTS_PURE_CUDA_DIR}/utils_pure_cuda_test.cu
-    LIBS_TO_LINK triangle_detector_pure_cuda_for_test
-    OUTPUT_DIRS ${PURE_CUDA_TEST_OUTPUT_DIRECTORIES}
-    INCLUDES ${TEST_LOGIC_INCLUDES}
-    )
+    # CUDA TESTS
+
+    add_executable(triangle_detector_pure_cuda_tests pure_cuda/triangle_pure_cuda_test.cu)
+    target_link_libraries(triangle_detector_pure_cuda_tests PRIVATE pure_cuda_shape_detector_lib TestInterface)
+    if(NOT DEFINED ENABLE_ALL_TESTS_COMPILATION_ONLY)
+        gtest_discover_tests(triangle_detector_pure_cuda_tests)
+    endif()
+
+
+    add_executable(utils_pure_cuda_tests pure_cuda/utils_pure_cuda_test.cu)
+    target_link_libraries(utils_pure_cuda_tests PRIVATE pure_cuda_utils_lib TestInterface)
+    if(NOT DEFINED ENABLE_ALL_TESTS_COMPILATION_ONLY)
+        gtest_discover_tests(utils_pure_cuda_tests)
+    endif()
 
 endif()
 
@@ -110,7 +117,7 @@ endif()
 # the individual test targets defined above.
 # Define the output directories for all tests
 
-if(ENABLE_ALL_TESTS_COMPILATION)
+if(ENABLE_ALL_TESTS_COMPILATION_ONLY)
 
     set(ALL_TRIANGLE_DETECTOR_TESTS_DEPENDENCIES 
         triangle_detector_cpp_tests
@@ -118,11 +125,9 @@ if(ENABLE_ALL_TESTS_COMPILATION)
         triangle_detector_pure_cuda_tests
     )
 
-    add_gtest_exec(
-    triangle_detector_all_tests
-    SOURCES ${TESTS_DIR}/run_all_tests.cpp
-    DEPENDENCIES ${ALL_TRIANGLE_DETECTOR_TESTS_DEPENDENCIES}
-    )
+    add_executable(triangle_detector_all_tests run_all_tests.cpp)
+    string(REPLACE ";" "," TESTS_BINARIES "${ALL_TRIANGLE_DETECTOR_TESTS_DEPENDENCIES}")
+    target_compile_definitions(triangle_detector_all_tests PUBLIC ALL_TESTS_BINARIES="${TESTS_BINARIES}")
 
 
     set(ALL_UTILS_TESTS_DEPENDENCIES 
@@ -131,11 +136,10 @@ if(ENABLE_ALL_TESTS_COMPILATION)
         utils_pure_cuda_tests
     )
 
-    add_gtest_exec(
-    utils_all_tests
-    SOURCES ${TESTS_DIR}/run_all_tests.cpp
-    DEPENDENCIES ${ALL_UTILS_TESTS_DEPENDENCIES}
-    )
+
+    add_executable(utils_all_tests run_all_tests.cpp)
+    string(REPLACE ";" "," TESTS_BINARIES "${ALL_UTILS_TESTS_DEPENDENCIES}")
+    target_compile_definitions(utils_all_tests PUBLIC ALL_TESTS_BINARIES="${TESTS_BINARIES}")
 
 
     set(ALL_TESTS_DEPENDENCIES 
@@ -143,35 +147,10 @@ if(ENABLE_ALL_TESTS_COMPILATION)
         ${ALL_UTILS_TESTS_DEPENDENCIES}
     )
 
-    add_gtest_exec(
-    run_all_tests
-    SOURCES ${TESTS_DIR}/run_all_tests.cpp
-    DEPENDENCIES ${ALL_TESTS_DEPENDENCIES}
-    )
+    add_executable(run_all_tests run_all_tests.cpp)
+    string(REPLACE ";" "," TESTS_BINARIES "${ALL_TESTS_DEPENDENCIES}")
+    target_compile_definitions(run_all_tests PUBLIC ALL_TESTS_BINARIES="${TESTS_BINARIES}")
+
 
 
 endif()
-
-
-
-
-
-
-
-
-
-
-
-# להגדיר קבצי הטסטים שלך
-# set(TEST_SOURCES
-#     triangle_cpp_test.cpp
-#     utils_cpp_test.cpp
-#     ...
-# )
-
-# add_executable(run_all_tests ${TEST_SOURCES})
-# # לקשר לספריות שאתה בודק (שנבנות בפרויקט הראשי)
-# target_link_libraries(run_all_tests PRIVATE triangle_detector_cpp_for_test ${OpenCV_LIBS} gtest gtest_main)
-
-# # תוספות אופציונליות
-# gtest_discover_tests(run_all_tests)

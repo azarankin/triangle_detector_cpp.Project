@@ -2,7 +2,7 @@
 #include "utils.cuh"
 #include <utils_cpp.h>
 #include <utils_pure_cuda.cuh>
-
+#include <utils_cuda_opencv.cuh>
 
 namespace benchmark 
 {
@@ -13,6 +13,59 @@ namespace benchmark
 void threshold_filter(const cv::Mat& src, cv::Mat& dst) 
 {
     ::threshold_filter(src, dst);
+}
+
+void adaptive_threshold_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    ::adaptive_threshold_filter(src, dst);
+}
+
+void gaussian_blur_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    ::gaussian_blur_filter(src, dst);
+}
+
+
+void gray_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    ::gray_filter(src, dst);
+}
+
+
+
+
+
+void opencv_cuda_threshold_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    const cv::cuda::GpuMat src_gpu(src);
+    cv::cuda::GpuMat dst_gpu;
+    ::cuda_threshold_filter(src_gpu, dst_gpu);
+    dst_gpu.download(dst);
+}
+
+void opencv_cuda_adaptive_threshold_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    const cv::cuda::GpuMat src_gpu(src);
+    cv::cuda::GpuMat dst_gpu;
+    ::cuda_adaptive_threshold_filter(src_gpu, dst_gpu);
+    dst_gpu.download(dst);
+}
+
+void opencv_cuda_gaussian_blur_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    const cv::cuda::GpuMat src_gpu(src);
+    cv::cuda::GpuMat dst_gpu;
+    ::cuda_gaussian_blur_filter(src_gpu, dst_gpu);
+    dst_gpu.download(dst);
+}
+
+
+void opencv_cuda_gray_filter(const cv::Mat& src, cv::Mat& dst) 
+{
+    const cv::cuda::GpuMat src_gpu(src);
+    cv::cuda::GpuMat dst_gpu;
+    ::cuda_gray_filter(src_gpu, dst_gpu);
+    dst_gpu.download(dst);
 }
 
 
@@ -29,25 +82,11 @@ void pure_cuda_threshold_filter(
 
     // PURE CUDA על buffers ישירות:
     // עובר stride עבור source ו-destination, plus default stream
-    ::pure_cuda_threshold_filter(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows, src.cols, dst.cols);
+    ::pure_cuda_threshold_filter(src, dst);
     
     std::cout << "CUDA threshold_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
     // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
 }
-
-
-
-
-
-
-
-
-void adaptive_threshold_filter(const cv::Mat& src, cv::Mat& dst) 
-{
-    ::adaptive_threshold_filter(src, dst);
-}
-
-
 
 
 void pure_cuda_adaptive_threshold(
@@ -63,27 +102,11 @@ void pure_cuda_adaptive_threshold(
 
     // PURE CUDA על buffers ישירות:
     // עובר stride עבור source ו-destination, plus default stream
-    ::pure_cuda_adaptive_threshold(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows, src.cols, dst.cols);
+    ::pure_cuda_adaptive_threshold(src, dst);
     
     std::cout << "CUDA adaptive_threshold_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
     // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
 }
-
-
-
-
-
-
-
-
-
-
-
-void gaussian_blur_filter(const cv::Mat& src, cv::Mat& dst) 
-{
-    ::gaussian_blur_filter(src, dst);
-}
-
 
 
 void pure_cuda_gaussian_blur_filter(
@@ -99,19 +122,12 @@ void pure_cuda_gaussian_blur_filter(
 
     // PURE CUDA על buffers ישירות:
     // עובר stride עבור source ו-destination, plus default stream
-    ::pure_cuda_gaussian_blur_filter(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows, src.cols, dst.cols);
+    ::pure_cuda_gaussian_blur_filter(src, dst);
     
     std::cout << "CUDA gaussian_blur_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
     // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
 }
 
-
-
-
-void gray_filter(const cv::Mat& src, cv::Mat& dst) 
-{
-    ::gray_filter(src, dst);
-}
 
 void pure_cuda_gray_filter(const cv::Mat& src, cv::Mat& dst) {
     CV_Assert(src.type() == CV_8UC3); // BGR input
@@ -120,7 +136,7 @@ void pure_cuda_gray_filter(const cv::Mat& src, cv::Mat& dst) {
 
     // PURE CUDA על buffers ישירות:
 
-    ::cuda_pure_gray_filter(src.ptr<unsigned char>(), dst.ptr<unsigned char>(), src.cols, src.rows);
+    ::cuda_pure_gray_filter(src, dst);
     std::cout << "CUDA gray_filter: output " << dst.cols << "x" << dst.rows << " channels=" << dst.channels() << std::endl;
     // אין צורך ב-GPU mats כאן כי אנחנו עובדים עם pure CUDA
 
@@ -177,14 +193,16 @@ int main()
     auto algorithms_gray_filter = std::vector<AlgorithmEntry>
     {
         {"CPU", benchmark::gray_filter, nullptr},
+        {"CUDA_OPENCV", benchmark::opencv_cuda_gray_filter, nullptr},
         {"PURE_CUDA", benchmark::pure_cuda_gray_filter, nullptr}
-        // ניתן להוסיף פרופילרים: {"CPU", benchmark::gray_filter, benchmark::profile_gray_filter},
+        
     };
     benchmark_and_compare_logic(input_color, algorithms_gray_filter, output_path, "Gray_Filter");
 
     auto algorithms_gaussian_blur = std::vector<AlgorithmEntry>
     {
         {"CPU", benchmark::gaussian_blur_filter, nullptr},
+        {"CUDA_OPENCV", benchmark::opencv_cuda_gaussian_blur_filter, nullptr},
         {"PURE_CUDA", benchmark::pure_cuda_gaussian_blur_filter, nullptr}
     };
     benchmark_and_compare_logic(input, algorithms_gaussian_blur, output_path, "Gaussian_Blur_Filter");
@@ -192,6 +210,7 @@ int main()
     auto algorithms_adaptive_threshold = std::vector<AlgorithmEntry>
     {
         {"CPU", benchmark::adaptive_threshold_filter, nullptr},
+        {"CUDA_OPENCV", benchmark::opencv_cuda_adaptive_threshold_filter, nullptr},
         {"PURE_CUDA", benchmark::pure_cuda_adaptive_threshold, nullptr}
     };
     benchmark_and_compare_logic(input, algorithms_adaptive_threshold, output_path, "Adaptive_Threshold");
@@ -199,6 +218,7 @@ int main()
     auto algorithms_threshold_filter = std::vector<AlgorithmEntry>
     {
         {"CPU", benchmark::threshold_filter, nullptr},
+        {"CUDA_OPENCV", benchmark::opencv_cuda_threshold_filter, nullptr},
         {"PURE_CUDA", benchmark::pure_cuda_threshold_filter, nullptr}
     };
     benchmark_and_compare_logic(input, algorithms_threshold_filter, output_path, "Threshold_Filter");

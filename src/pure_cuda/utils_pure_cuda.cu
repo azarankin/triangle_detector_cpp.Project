@@ -11,7 +11,7 @@
 std::string utils_print_message_pure_cuda() 
 {
     std::cout << "\t\t\t\t\t\t\tPrinting from CUDA OpenCV Utils library!" << std::endl;
-    return "pure_cuda_triangle_detector";
+    return "pure_cuda_utils";
 }
 
 // void cuda_gray_filter(const cv::cuda::GpuMat& src, cv::cuda::GpuMat& dst)
@@ -34,35 +34,42 @@ __global__ void bgr2gray_kernel(const uchar3* src, unsigned char* dst, int width
     dst[idx] = gray;
 }
 
-
 void cuda_pure_gray_filter(
-    const unsigned char* h_src_bgr,
-    unsigned char* h_dst_gray,
-    int width,
-    int height,
+    const cv::Mat& src_bgr,
+    cv::Mat& dst_gray,
     cudaStream_t stream
 ) {
-    size_t num_pixels = width * height;
-    size_t src_bytes = num_pixels * 3;
-    size_t dst_bytes = num_pixels;
+    CV_Assert(src_bgr.type() == CV_8UC3);
+    CV_Assert(dst_gray.type() == CV_8UC1);
+    CV_Assert(src_bgr.size() == dst_gray.size());
+
+    const int width = src_bgr.cols;
+    const int height = src_bgr.rows;
+    const size_t num_pixels = width * height;
+    const size_t src_bytes = num_pixels * sizeof(uchar3);   // uchar3 == 3 bytes per pixel
+    const size_t dst_bytes = num_pixels;
 
     uchar3* d_src = nullptr;
     unsigned char* d_dst = nullptr;
+
     cudaMalloc(&d_src, src_bytes);
     cudaMalloc(&d_dst, dst_bytes);
 
-    // העברת נתונים ל־device (async!)
-    cudaMemcpyAsync(d_src, h_src_bgr, src_bytes, cudaMemcpyHostToDevice, stream);
+    // Note: reinterpret src_bgr buffer as uchar3* safely
+    cudaMemcpyAsync(
+        d_src,
+        reinterpret_cast<const uchar3*>(src_bgr.ptr<unsigned char>()),
+        src_bytes,
+        cudaMemcpyHostToDevice,
+        stream
+    );
 
-    // הפעלת הקרנל – עם stream!
     dim3 block(16, 16);
     dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
+
     bgr2gray_kernel<<<grid, block, 0, stream>>>(d_src, d_dst, width, height);
 
-    // העברת תוצאה חזרה ל־host (async!)
-    cudaMemcpyAsync(h_dst_gray, d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
-
-    // המתנה לסיום כל המשימות ב־stream הזה (ולא ב־device כולו)
+    cudaMemcpyAsync(dst_gray.ptr<unsigned char>(), d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
 
     cudaFree(d_src);
@@ -184,43 +191,55 @@ __global__ void gaussian_blur_kernel(
 
 
 
-// חתימה – PURE CUDA, לא תלויית OpenCV
-void pure_cuda_gaussian_blur_filter( const unsigned char* h_src, unsigned char* h_dst, int width, int height, int src_stride, int dst_stride, cudaStream_t stream)
-{
-    //upload_gaussian_kernel_5x5(); // להעלות ל־constant memory (קורא ל-cudaMemcpyToSymbol)
 
-    size_t src_bytes = src_stride * height;
-    size_t dst_bytes = dst_stride * height;
+// חתימה – PURE CUDA, לא תלויית OpenCV
+void pure_cuda_gaussian_blur_filter(
+    const cv::Mat& src,
+    cv::Mat& dst,
+    cudaStream_t stream
+) {
+    CV_Assert(src.type() == CV_8UC1 && dst.type() == CV_8UC1);
+    CV_Assert(src.size() == dst.size());
+
+    const int width = src.cols;
+    const int height = src.rows;
+    const int src_stride = src.step;
+    const int dst_stride = dst.step;
+    const size_t src_bytes = src_stride * height;
+    const size_t dst_bytes = dst_stride * height;
 
     unsigned char* d_src = nullptr;
     unsigned char* d_dst = nullptr;
 
-    // העתקה ל-device
+    // Allocate GPU memory
     cudaMalloc(&d_src, src_bytes);
     cudaMalloc(&d_dst, dst_bytes);
 
-    cudaMemcpyAsync(d_src, h_src, src_bytes, cudaMemcpyHostToDevice, stream);
+    // Copy from host to device
+    cudaMemcpyAsync(d_src, src.ptr<unsigned char>(), src_bytes, cudaMemcpyHostToDevice, stream);
 
+    // Launch kernel
     dim3 block(16, 16);
     dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
-    // חישוב גודל ה־shared memory
-    const int ksize = K_ZIZE, khalf = ksize/2;
-    size_t shmem_size = (block.x + 2*khalf) * (block.y + 2*khalf) * sizeof(unsigned char);
+
+    const int ksize = K_ZIZE;  // NOTE: You must define this or pass as parameter
+    const int khalf = ksize / 2;
+    size_t shmem_size = (block.x + 2 * khalf) * (block.y + 2 * khalf) * sizeof(unsigned char);
+
+    // Optional: preload kernel to constant memory
+    // upload_gaussian_kernel_5x5();
 
     gaussian_blur_kernel<<<grid, block, shmem_size, stream>>>(
         d_src, d_dst, width, height, src_stride, dst_stride
     );
 
-    // החזרה מה־device ל־host
-    cudaMemcpyAsync(h_dst, d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
-
-    cudaStreamSynchronize(stream);  // מחכה לסיום כל המשימות ב־stream
+    // Copy back result
+    cudaMemcpyAsync(dst.ptr<unsigned char>(), d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
+    cudaStreamSynchronize(stream);
 
     cudaFree(d_src);
     cudaFree(d_dst);
 }
-
-
 
 
 
@@ -311,30 +330,43 @@ __global__ void adaptive_threshold_kernel_11_5(
 
 
 
+
 void pure_cuda_adaptive_threshold(
-    const unsigned char* h_src,
-    unsigned char* h_dst,
-    int width, int height,
-    int src_stride, int dst_stride,
-    cudaStream_t stream)
-{
-    size_t src_bytes = src_stride * height, dst_bytes = dst_stride * height;
-    unsigned char* d_src = nullptr; unsigned char* d_dst = nullptr;
-    cudaMalloc(&d_src, src_bytes); cudaMalloc(&d_dst, dst_bytes);
-    cudaMemcpyAsync(d_src, h_src, src_bytes, cudaMemcpyHostToDevice, stream);
+    const cv::Mat& src,
+    cv::Mat& dst,
+    cudaStream_t stream
+) {
+    CV_Assert(src.type() == CV_8UC1 && dst.type() == CV_8UC1);
+    CV_Assert(src.rows == dst.rows && src.cols == dst.cols);
+
+    const int width = src.cols;
+    const int height = src.rows;
+    const int src_stride = src.step;
+    const int dst_stride = dst.step;
+    const size_t src_bytes = src_stride * height;
+    const size_t dst_bytes = dst_stride * height;
+
+    unsigned char* d_src = nullptr;
+    unsigned char* d_dst = nullptr;
+
+    cudaMalloc(&d_src, src_bytes);
+    cudaMalloc(&d_dst, dst_bytes);
+
+    cudaMemcpyAsync(d_src, src.ptr<unsigned char>(), src_bytes, cudaMemcpyHostToDevice, stream);
 
     dim3 block(16, 16);
-    dim3 grid((width + block.x - 1)/block.x, (height + block.y - 1)/block.y);
+    dim3 grid((width + block.x - 1) / block.x, (height + block.y - 1) / block.y);
 
-    adaptive_threshold_kernel_11_5<<<grid, block, 0, stream>>>(d_src, d_dst, width, height, src_stride, dst_stride);
+    adaptive_threshold_kernel_11_5<<<grid, block, 0, stream>>>(
+        d_src, d_dst, width, height, src_stride, dst_stride
+    );
 
-    cudaMemcpyAsync(h_dst, d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
+    cudaMemcpyAsync(dst.ptr<unsigned char>(), d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
-    cudaFree(d_src); cudaFree(d_dst);
+
+    cudaFree(d_src);
+    cudaFree(d_dst);
 }
-
-
-
 
 
 
@@ -364,28 +396,40 @@ __global__ void threshold_kernel(
 
 
 void pure_cuda_threshold_filter(
-    const unsigned char* h_src,
-    unsigned char* h_dst,
-    int width, int height,
-    int src_stride, int dst_stride,
+    const cv::Mat& src,
+    cv::Mat& dst,
     cudaStream_t stream,
     unsigned char thresh,
     unsigned char maxval
-)
-{
-    size_t src_bytes = src_stride * height, dst_bytes = dst_stride * height;
-    unsigned char* d_src = nullptr; unsigned char* d_dst = nullptr;
-    cudaMalloc(&d_src, src_bytes); cudaMalloc(&d_dst, dst_bytes);
+) {
+    CV_Assert(src.type() == CV_8UC1 && dst.type() == CV_8UC1);
+    CV_Assert(src.rows == dst.rows && src.cols == dst.cols);
 
-    cudaMemcpyAsync(d_src, h_src, src_bytes, cudaMemcpyHostToDevice, stream);
+    const int width = src.cols;
+    const int height = src.rows;
+    const int src_stride = src.step;
+    const int dst_stride = dst.step;
+    const size_t src_bytes = src_stride * height;
+    const size_t dst_bytes = dst_stride * height;
+
+    unsigned char* d_src = nullptr;
+    unsigned char* d_dst = nullptr;
+
+    cudaMalloc(&d_src, src_bytes);
+    cudaMalloc(&d_dst, dst_bytes);
+
+    cudaMemcpyAsync(d_src, src.ptr<unsigned char>(), src_bytes, cudaMemcpyHostToDevice, stream);
 
     dim3 block(16, 16);
     dim3 grid((width + block.x - 1)/block.x, (height + block.y - 1)/block.y);
 
-    threshold_kernel<<<grid, block, 0, stream>>>(d_src, d_dst, width, height, src_stride, dst_stride, thresh, maxval);
+    threshold_kernel<<<grid, block, 0, stream>>>(
+        d_src, d_dst, width, height, src_stride, dst_stride, thresh, maxval
+    );
 
-    cudaMemcpyAsync(h_dst, d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
+    cudaMemcpyAsync(dst.ptr<unsigned char>(), d_dst, dst_bytes, cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
 
-    cudaFree(d_src); cudaFree(d_dst);
+    cudaFree(d_src);
+    cudaFree(d_dst);
 }
