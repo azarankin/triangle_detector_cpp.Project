@@ -12,14 +12,14 @@
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
+                "SWITCH_TO_PROFILING": "ON",
                 "ENABLE_BENCHMARKS": "ON",
                 "ENABLE_EXECUTABLES": "OFF",
-                "ENABLE_TEST_DEBUG": "OFF",
-                "ENABLE_ALL_TESTS_COMPILATION_ONLY": "ON",
+                "ENABLE_DEBUG": "OFF",
+                "SWITCH_TO_ALL_TESTS_COMPILATION": "OFF",
                 "ENABLE_CPP_TESTS": "OFF",
                 "ENABLE_CUDA_OPENCV_TESTS": "OFF",
                 "ENABLE_PURE_CUDA_TESTS": "OFF"
-                
             }
         },
         {
@@ -30,9 +30,22 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
-                "CMAKE_CUDA_ARCHITECTURES": "89"
+                "CMAKE_CUDA_ARCHITECTURES": "89",
+                "CMAKE_CUDA_FLAGS_DEBUG": "-G -O0"
+            }
+        },
+        {
+            "name": "release-x64",
+            "inherits": "base",
+            "displayName": "Release PC RTX4060TI build (O3)",
+            "description": "Release build with CUDA, OpenCV and O3 optimization",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CUDA_COMPILER": "/usr/local/cuda/bin/nvcc",
+                "CMAKE_CUDA_ARCHITECTURES": "89",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O3",
+                "CMAKE_CUDA_FLAGS_RELEASE": "-O3 -Xptxas -O3 -DNDEBUG"
             }
         }
     ]
-
 }

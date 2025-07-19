@@ -1,7 +1,0 @@
-# /src/pure_cuda/CMakeLists.txt
-
-add_library(pure_cuda_utils_lib STATIC utils_pure_cuda.cu)
-target_link_libraries(pure_cuda_utils_lib PUBLIC shared_utils_cuda_lib OpenCV_CUDA_Interface DebugInterface)
-
-add_library(pure_cuda_shape_detector_lib STATIC shape_detector_pure_cuda.cu)
-target_link_libraries(pure_cuda_shape_detector_lib PRIVATE pure_cuda_utils_lib)

@@ -10,7 +10,7 @@
 
 std::string triangle_print_message() 
 {
-    std::cout << "\t\t\t\t\t\t\tPrinting from CUDA OpenCV Triangel Detector library!" << std::endl;
+    std::cout << "CUDA OpenCV Triangle Detector library!" << std::endl;
     return "pure_cuda_triangle_detector";
 }
 

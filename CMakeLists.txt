@@ -12,12 +12,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CUDA_STANDARD 17)
 #set(CMAKE_CUDA_ARCHITECTURES 89) ## Set inside CMakePresets.json
 #set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc) # CUDA Path ## Set inside CMakePresets.json
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xptxas -O3 -DNDEBUG")
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) ## Library build
 set(COMPILER_WARNINGS -Wall -Wextra -Wno-unused-parameter)
 add_compile_options(${COMPILER_WARNINGS})   ## Show errors on production # For each target target_compile_options(<target_name> PRIVATE -Wall -Wextra)
 set(DEBUG_IMAGE_DEFAULT_DIR "${CMAKE_SOURCE_DIR}/debug")
-add_compile_definitions(DEBUG_IMAGE_DEFAULT_DIR="${DEBUG_IMAGE_DEFAULT_DIR}") ## Project Debug Default Configuration  #file(MAKE_DIRECTORY "${DEBUG_IMAGE_DEFAULT_DIR}") # create debug directory if it doesn't exist
+add_compile_definitions(DEBUG_IMAGE_DEFAULT_DIR="${DEBUG_IMAGE_DEFAULT_DIR}") ## Define default debug directory
+file(MAKE_DIRECTORY "${DEBUG_IMAGE_DEFAULT_DIR}") ## Create debug directory if it doesn't exist
+
+
 
 ## Dependencies
 find_package(OpenCV REQUIRED)
@@ -26,28 +29,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/googletest)
 enable_testing()
 include(GoogleTest)
 
-
-# ---- Projects Logs Settings ----
-set(LOG_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake${CMAKE_SOURCE_DIR}/${CMAKE_SOURCE_DIR}/_logs.log" CACHE INTERNAL "")
-set(ERROR_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake_errors.log" CACHE INTERNAL "")
-
-## Log the start of the configuration
-set(LOGS_DIR ${CMAKE_SOURCE_DIR}/logs)
-#include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
-#reset_log_file()
-#reset_error_file()
-
-
-# Check CMakePresets.json for options
-
 # ---- Include Directories ----
 include_directories(${CMAKE_SOURCE_DIR}/include) ## Project Include Directories  # For each target  target_include_directories(<target_name> PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 
-# ---- Include CMake Modules ----
-# Include custom CMake modules for project configuration, logging, and target management
-
-
+# ---- Interfaces ----
+# ---- Add OpenCV Interface ----
 add_library(OpenCV_Interface INTERFACE)
 target_include_directories(OpenCV_Interface INTERFACE ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(OpenCV_Interface INTERFACE ${OpenCV_LIBS})
@@ -56,39 +43,8 @@ add_library(OpenCV_CUDA_Interface INTERFACE)
 target_include_directories(OpenCV_CUDA_Interface INTERFACE ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(OpenCV_CUDA_Interface INTERFACE ${OpenCV_LIBS} opencv_cudaimgproc cuda)
 
-# ---- Add Debug Interface ----
-add_library(DebugInterface INTERFACE)
 
-
-# ---- Add Shared Debug Libraries ----
-add_library(debug_lib STATIC src/debug.cpp)
-target_link_libraries(debug_lib PRIVATE OpenCV_Interface)
-add_library(debug_cuda_lib STATIC src/debug.cpp src/debug.cu)
-target_link_libraries(debug_cuda_lib PRIVATE OpenCV_CUDA_Interface)
-
-
-# ---- Add Shared Libraries ----
-add_library(shape_detector_logic_lib STATIC src/shared/shape_detector_logic.cpp)
-target_link_libraries(shape_detector_logic_lib PRIVATE OpenCV_Interface)
-add_library(shared_utils_lib STATIC src/shared/shared_utils.cpp)
-target_link_libraries(shared_utils_lib PRIVATE debug_lib OpenCV_Interface DebugInterface)
-add_library(shared_utils_cuda_lib STATIC src/shared/shared_utils.cpp src/shared/shared_utils.cu)
-target_link_libraries(shared_utils_cuda_lib PRIVATE debug_cuda_lib OpenCV_CUDA_Interface DebugInterface)
-
-#add_subdirectory(src)
-
-# ---- Add Shared Libraries ----
-add_subdirectory(src/cpp)
-# cpp_shape_detector_lib
-# cpp_utils_lib
-add_subdirectory(src/cuda_opencv)
-# cuda_opencv_shape_detector_lib
-# cuda_opencv_utils_lib
-add_subdirectory(src/pure_cuda)
-# pure_cuda_shape_detector_lib
-# pure_cuda_utils_lib
-
-
+# ---- CMake Functions ----
 function(add_postbuild_clear_output TARGET_NAME)
     if(NOT ARGN MATCHES "out" OR NOT ARGN MATCHES "${CMAKE_SOURCE_DIR}")
             message(FATAL_ERROR "You request to remove a directory from path that not contains 'out' or 'output' or '${CMAKE_SOURCE_DIR}', the set path is[${ARGN}]")
@@ -99,37 +55,91 @@ function(add_postbuild_clear_output TARGET_NAME)
 endfunction()
 
 
+# ---- Add Debug Interface ----
+add_library(DebugInterface INTERFACE)
+if(ENABLE_DEBUG AND NOT DEFINED SWITCH_TO_PROFILING)
+    set(DEBUG_IMAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/test/data/current_output/debug")
+    file(MAKE_DIRECTORY "${DEBUG_IMAGE_DIRECTORY}")
+    set(DEBUG_DEFINES
+        ENABLE_DEBUG_IMAGES
+        DEBUG_IMAGE_DIR="${DEBUG_IMAGE_DIRECTORY}"
+    )
+    target_compile_definitions(DebugInterface INTERFACE ${DEBUG_DEFINES})
+    # add_postbuild_clear_output(DebugInterface ${DEBUG_IMAGE_DIRECTORY})
+endif()
 
-# POC Benchmark Code Files
-if(ENABLE_BENCHMARKS)
-    add_subdirectory(benchmarks)
+
+# ---- Add Profiling Interface ----
+add_library(ProfilingInterface INTERFACE)
+if(SWITCH_TO_PROFILING)
+    set(PROFILING_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/profiling/output_results")
+    set(PROFILING_DEFINES
+        ENABLE_PROFILING
+        ENABLE_NVTX
+        PROFILING_OUTPUT_DIRECTORY="${PROFILING_OUTPUT_DIRECTORY}"
+    )
+    file(MAKE_DIRECTORY "${PROFILING_OUTPUT_DIRECTORY}")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+        list(APPEND PROFILING_DEFINES COMPILED_AS_RELEASE)
+        if(CMAKE_CXX_FLAGS_RELEASE MATCHES "-O3")
+            list(APPEND PROFILING_DEFINES COMPILED_WITH_O3)
+        else()
+            message(FATAL_ERROR "==> Warning: Release build *without* -O3!")
+        endif()
+    else()
+        message(FATAL_ERROR "Profiling must be built in Release or RelWithDebInfo mode! Current: ${CMAKE_BUILD_TYPE}")
+    endif()
+    target_compile_definitions(ProfilingInterface INTERFACE ${PROFILING_DEFINES})
 endif()
 
 
 
-if(ENABLE_EXECUTABLES)
-    add_subdirectory(demo)
+
+# ---- Add Shared Libraries ----
+add_subdirectory(src)
+# debug_lib
+# debug_cuda_lib
+# shared_utils_lib
+# shared_utils_cuda_lib
+# cpp_shape_detector_lib
+# cpp_utils_lib
+# cuda_opencv_shape_detector_lib
+# cuda_opencv_utils_lib
+# pure_cuda_shape_detector_lib
+# pure_cuda_utils_lib
+
+
+if(SWITCH_TO_PROFILING)
+    # ---- Profiling ----
+    add_subdirectory(profiling)
+else()
+    
+    if(ENABLE_BENCHMARKS)
+        # ---- Benchmarks ----
+        add_subdirectory(benchmarks)
+    endif()
+
+    if(ENABLE_EXECUTABLES)
+        # ---- Executables ----
+        add_subdirectory(demo)
+    endif()
+
+    # ---- Tests ----
+    add_subdirectory(tests)
+
 endif()
 
 
 
-# ---- Tests ----
 
 
-add_subdirectory(tests)
+# ---- Projects Logs Settings ----
+#set(LOG_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake${CMAKE_SOURCE_DIR}/${CMAKE_SOURCE_DIR}/_logs.log" CACHE INTERNAL "")
+#set(ERROR_FILE_PATH "${CMAKE_SOURCE_DIR}/logs/cmake_errors.log" CACHE INTERNAL "")
 
-
-
-
-
-
-# also set the ALL_TESTS_DEPENDENCIES inside the tests/run_all_tests.cpp
-
-
-# ---- Profiling ----
-
-
-# ---- Banchmarks ----
-
-
-
+## Log the start of the configuration
+#set(LOGS_DIR ${CMAKE_SOURCE_DIR}/logs)
+#include(${CMAKE_SOURCE_DIR}/cmake/AddLogMessage.cmake)
+#reset_log_file()
+#reset_error_file()
+# Check CMakePresets.json for options

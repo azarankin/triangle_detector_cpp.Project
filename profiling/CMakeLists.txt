@@ -1,0 +1,3 @@
+add_executable(opencv_cuda_profiling profiling_opencv_cuda.cu)
+target_link_libraries(opencv_cuda_profiling PRIVATE cuda_opencv_shape_detector_lib ProfilingInterface)
+

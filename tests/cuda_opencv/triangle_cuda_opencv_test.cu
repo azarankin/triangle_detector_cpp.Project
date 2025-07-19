@@ -62,7 +62,6 @@ TEST_F(PureCUDATest, DetectTriangleContourOnAnother)
     auto detected_contours = contour_compare(other_triangle_image, template_contour);
     auto result = draw_contour_on_image(other_triangle_image, detected_contours);
     cv::Mat expected = cv::imread(expected_other_triangle_contours_img, cv::IMREAD_COLOR);
-
     image_visual_similarity_asserts(expected, result);
 }
 

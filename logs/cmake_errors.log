@@ -1,5 +1,0 @@
-=== CMake Errors ===
-
-2025-07-12 16:02:00 -- ⚠️ You request to remove a directory from path that not contains 'out' or 'output' INCLUDE_DIRS
-2025-07-12 16:02:16 -- ⚠️ You request to remove a directory from path that not contains 'out' or 'output' INCLUDE_DIRS
-2025-07-12 16:03:35 -- ⚠️ You request to remove a directory from path that not contains 'out' or 'output' INCLUDE_DIRS

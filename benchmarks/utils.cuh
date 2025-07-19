@@ -10,6 +10,7 @@
 #include <fstream>
 #include <numeric>
 
+
 // Console coloring
 #define BLACK   "\033[30m"
 #define RED     "\033[31m"

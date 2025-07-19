@@ -56,6 +56,7 @@ reorganize add_subdirectory CMakeLists.txt
 "עברתי ל־asynchronous batching של פריימים"
 "יצרתי Flame Graph משולב עם nvtxRangePush"
 "השוויתי מול DeepStream / פתרון Production"
-
+להוציא פלט תמונה מכל Test שיוצג ב console
+לארגן Benchmark שיעבוד כמו CUSTOM TEST עם סיכומי הרצה 
 NSIGHT
-לתקן CMAKE
+לתקן ש set(DEBUG_IMAGE_DIRECTORY "test/data/current_output/debug") יועתק ל archive output

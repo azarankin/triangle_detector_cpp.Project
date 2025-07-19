@@ -72,6 +72,8 @@
         "csignal": "cpp",
         "forward_list": "cpp",
         "future": "cpp",
-        "cassert": "cpp"
+        "cassert": "cpp",
+        "shared_mutex": "cpp",
+        "cfenv": "cpp"
     }
 }
