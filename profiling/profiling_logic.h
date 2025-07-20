@@ -6,8 +6,8 @@
 
 namespace fs = std::filesystem;
 
-#ifdef ENABLE_DEBUG
-    #error "ENABLE_DEBUG is defined, but this file should not be compiled with it."
+#ifdef ENABLE_IMAGE_DEBUG
+    #error "ENABLE_IMAGE_DEBUG is defined, but this file should not be compiled with it."
 #endif
 
 #ifndef ENABLE_PROFILING

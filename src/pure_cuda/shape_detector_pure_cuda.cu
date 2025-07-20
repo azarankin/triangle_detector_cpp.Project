@@ -91,6 +91,9 @@ std::vector<cv::Point> find_shape_contour(const std::string& address)
     return second_largest_contour;
 }
 
+
+
+
 std::vector<std::vector<cv::Point>> contour_compare(
     cv::Mat& target_frame, 
     const std::vector<cv::Point>& template_contour,
@@ -114,13 +117,13 @@ std::vector<std::vector<cv::Point>> contour_compare(
 
     cudaStream_t stream = 0; // default stream
 
-    // --- Gray filter (קרנל ישיר)
+    // --- Gray filter Kernel
     {
         dim3 block(16, 16), grid((width+15)/16, (height+15)/16);
         bgr2gray_kernel<<<grid, block, 0, stream>>>(d_bgr, d_gray, width, height);
     }
 
-    // --- Gaussian blur (קרנל ישיר)
+    // --- Gaussian blur Kernel
     //upload_gaussian_kernel_5x5(); // מעלה ל־constant memory
     {
         dim3 block(16,16), grid((width+15)/16, (height+15)/16);
@@ -129,7 +132,7 @@ std::vector<std::vector<cv::Point>> contour_compare(
         );
     }
 
-    // --- Adaptive threshold (קרנל ישיר)
+    // --- Adaptive threshold Kernel 
     {
         dim3 block(16, 16), grid((width+15)/16, (height+15)/16);
         adaptive_threshold_kernel_11_5<<<grid, block, 0, stream>>>(

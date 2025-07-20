@@ -36,7 +36,3 @@ void create_triangle_image(const std::string& filename = "triangle.png",
 
 
 void imshow(const std::string& title, const cv::Mat& img);
-
-
-void run_camera(const std::vector<cv::Point>& template_contour, int camid = 0);
-

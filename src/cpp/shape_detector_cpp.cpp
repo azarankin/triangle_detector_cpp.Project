@@ -20,11 +20,11 @@ std::vector<cv::Point> find_shape_contour(const std::string& address)
     cv::Mat templat_img_gray;
     gray_filter(templat_img ,templat_img_gray);
 
-    // טשטוש
+    // Gaussian blur
     cv::Mat blured;
     gaussian_blur_filter(templat_img_gray, blured);
 
-    // סף
+    // Threshold
     cv::Mat thresh1;
     threshold_filter(blured, thresh1);
 

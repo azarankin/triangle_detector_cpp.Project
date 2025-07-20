@@ -57,7 +57,7 @@ endfunction()
 
 # ---- Add Debug Interface ----
 add_library(DebugInterface INTERFACE)
-if(ENABLE_DEBUG AND NOT DEFINED SWITCH_TO_PROFILING)
+if(ENABLE_IMAGE_DEBUG AND NOT DEFINED SWITCH_TO_PROFILING)
     set(DEBUG_IMAGE_DIRECTORY "${CMAKE_SOURCE_DIR}/test/data/current_output/debug")
     file(MAKE_DIRECTORY "${DEBUG_IMAGE_DIRECTORY}")
     set(DEBUG_DEFINES
